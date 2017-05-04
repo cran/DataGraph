@@ -14,7 +14,9 @@ Nothing returned
 Saves the data frame to a file
 }
 \examples{
+\dontrun{
 openDTBin("/tmp/test")
 addDTBin("/tmp/test","A",Orange)
 closeDTBin("/tmp/test")
+}
 }

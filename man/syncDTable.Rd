@@ -14,9 +14,11 @@ Nothing returned
 Used so that DataGraph can read up to an internal boundary inside the data file and avoids reading a partial table.  DataGraph monitors this file and reloads the file when it sees a new sync file.
 }
 \examples{
+\dontrun{
 openDTable("/tmp/test")
 addDTable("/tmp/test",Orange)
 syncDTable("/tmp/test")
 addDTable("/tmp/test",Orange)
 closeDTable("/tmp/test")
+}
 }

@@ -17,7 +17,9 @@ Nothing returned
 Adds the data into a .dtbin file.
 }
 \examples{
+\dontrun{
 openDTBin("/tmp/test")
 addDTBin("/tmp/test","A",Orange)
 closeDTBin("/tmp/test")
+}
 }

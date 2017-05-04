@@ -15,7 +15,9 @@ Nothing returned
 Adds a table to an already open table file.  Need to open it first by using the openDTable function.
 }
 \examples{
+\dontrun{
 openDTable("/tmp/test")
 addDTable("/tmp/test",Orange)
 closeDTable("/tmp/test")
+}
 }

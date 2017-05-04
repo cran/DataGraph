@@ -1,7 +1,7 @@
 Package: DataGraph
 Type: Package
 Title: Export Data from R so DataGraph can Read it
-Version: 1.0
+Version: 1.0.1
 Date: 2017-05-1
 Author: David Adalsteinsson
 Maintainer: David Adalsteinsson <david@visualdatatools.com>
@@ -10,6 +10,6 @@ License: GPL (>= 2)
 Imports: Rcpp (>= 0.12.10)
 LinkingTo: Rcpp
 NeedsCompilation: yes
-Packaged: 2017-05-03 12:03:34 UTC; david
+Packaged: 2017-05-04 19:12:22 UTC; david
 Repository: CRAN
-Date/Publication: 2017-05-03 15:47:09 UTC
+Date/Publication: 2017-05-04 22:26:30 UTC

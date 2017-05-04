@@ -14,7 +14,9 @@ Nothing returned
 Closes a .dtable file
 }
 \examples{
+\dontrun{
 openDTBin("/tmp/test")
 addDTBin("/tmp/test","A",Orange)
 closeDTBin("/tmp/test")
+}
 }

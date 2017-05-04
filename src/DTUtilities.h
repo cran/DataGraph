@@ -5,6 +5,8 @@
 #define DTUtilities_H
 
 #include <string>
+#include <unistd.h>
+
 using namespace std;
 
 extern std::string DTInt2String(int n);

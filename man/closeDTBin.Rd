@@ -14,7 +14,9 @@ Nothing returned
 Closes a .dtbin file
 }
 \examples{
+\dontrun{
 openDTBin("/tmp/test")
 addDTBin("/tmp/test","A",Orange)
 closeDTBin("/tmp/test")
+}
 }

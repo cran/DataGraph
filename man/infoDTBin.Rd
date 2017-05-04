@@ -14,8 +14,10 @@ Nothing returned, but data is printed to the console.  Intended as a debugging a
 Displays the content of a .dtbin file
 }
 \examples{
+\dontrun{
 openDTBin("/tmp/test")
 addDTBin("/tmp/test","A",Orange)
 infoDTBin("/tmp/test")
 closeDTBin("/tmp/test")
+}
 }

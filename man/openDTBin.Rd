@@ -14,8 +14,10 @@ Nothing returned
 Opens a .dtbin file.  Prints out an error message if the file is already open.
 }
 \examples{
+\dontrun{
 openDTBin("/tmp/test")
 addDTBin("/tmp/test","A",Orange)
 infoDTBin("/tmp/test")
 closeDTBin("/tmp/test")
+}
 }

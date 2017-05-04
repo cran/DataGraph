@@ -15,5 +15,7 @@ Nothing returned
 Saves the data frame to a file
 }
 \examples{
+\dontrun{
 writeDTable("/tmp/test",Orange)
+}
 }
