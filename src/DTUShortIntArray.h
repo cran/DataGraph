@@ -55,6 +55,7 @@ public:
     ssize_t Length() const {return Storage->length;}
     bool IsEmpty() const {return (Storage->length==0);}
     bool NotEmpty() const {return (Storage->length!=0);}
+    ssize_t MemoryUsed(void) const {return Length()*sizeof(unsigned short int);}
 
     // Low level access
     int ReferenceCount() const {Storage->accessLock.Lock(); int refCnt = Storage->referenceCount; Storage->accessLock.Unlock(); return refCnt;}

@@ -24,7 +24,7 @@ double DTDictionary::GetNumber(const std::string &s) const
 	const DTDictionaryStorage *p = content.Data();
     std::map<std::string,double>::const_iterator it = p->numberDictionary.find(s);
 	if (it==p->numberDictionary.end()) {
-		DTErrorMessage("dictionary.Number(string)","key not found, returning NAN");
+		DTErrorMessage("dictionary.Number(string)","key \"" + s + "\" not found, returning NAN");
 		return NAN;
 	}
 	else {

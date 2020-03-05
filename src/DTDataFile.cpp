@@ -121,6 +121,7 @@ void DTDataFileContent::ReadInContent(void)
         return;
 
     off_t EndsAt = file.Length();
+    size_t howMuchRead;
     
     // Check if there is an index saved at the end of this file.
     if (EndsAt>24) {
@@ -131,9 +132,9 @@ void DTDataFileContent::ReadInContent(void)
         if (memcmp(readInto.Pointer()," DT Index end ",14)==0) {
             // Read the last two bytes as an offset
             off_t offset;
-            memcpy(&offset,readInto.Pointer()+15,8);
+            memcpy(&offset,readInto.Pointer()+15,sizeof(off_t));
             if (swapBytes) {
-                DTSwap8Bytes(((unsigned char *)&offset),8);
+                DTSwap8Bytes(((unsigned char *)&offset),sizeof(off_t));
             }
             
             DTMutableCharArray headerBlock;
@@ -142,7 +143,10 @@ void DTDataFileContent::ReadInContent(void)
             if (offset>0 && offset<EndsAt-25) {
                 file.SetPosition(offset);
                 DTDataFileStructure header;
-                fread(&header,1,28,file.FILEForReading());
+                howMuchRead = fread(&header,1,28,file.FILEForReading());
+                if (howMuchRead!=28) {
+                    return;
+                }
                 if (swapBytes) {
                     DTSwap8Bytes(((unsigned char *)&header),8);
                     DTSwap4Bytes(((unsigned char *)&header)+8,20);
@@ -158,7 +162,7 @@ void DTDataFileContent::ReadInContent(void)
             }
             
             if (headerBlock.Length() && headerBlock(0)==1) {
-                int indexLength = headerBlock.Length();
+                ssize_t indexLength = headerBlock.Length();
                 const char *bufferP = headerBlock.Pointer();
                 
                 ssize_t m,n,o,nameLength,entrySize;
@@ -232,6 +236,7 @@ void DTDataFileContent::ReadInContent(void)
                 }
             }
         }
+        file.SetPosition(0);
     }
     
     // See if there is an index file saved.
@@ -250,10 +255,10 @@ void DTDataFileContent::ReadInContent(void)
         // include entries that haven't been completely saved in the data file, and
         // those entries should be quietly skipped.
         DTFile tempIndex(indexName,DTFile::ReadOnly);
-        size_t indexLength = tempIndex.Length();
+        DTFilePosition indexLength = tempIndex.Length();
         
         const char *shouldBe = "dtbin index file";
-        if (indexLength<strlen(shouldBe)+1) {
+        if (indexLength<(ssize_t)strlen(shouldBe)+1) {
             // Too small
             indexLength = 0;
         }
@@ -261,12 +266,12 @@ void DTDataFileContent::ReadInContent(void)
         FILE *indexFilePointer = tempIndex.FILEForReading();
         if (indexFilePointer==NULL) indexLength = 0;
         
-        DTMutableCharArray bufferArray(indexLength ? indexLength+1 : 0);
+        DTMutableCharArray bufferArray((ssize_t)(indexLength ? indexLength+1 : 0));
         
         char *bufferP = bufferArray.Pointer();
         if (indexLength && bufferP) {
             bufferP[indexLength] = 0;
-            if (fread(bufferP,1,indexLength,indexFilePointer)!=indexLength) {
+            if ((ssize_t)fread(bufferP,1,(ssize_t)indexLength,indexFilePointer)!=indexLength) {
                 indexLength = 0;
                 bufferArray = DTMutableCharArray();
                 bufferP = 0;
@@ -281,7 +286,7 @@ void DTDataFileContent::ReadInContent(void)
         
         if (bufferP) {
             ssize_t m,n,o,nameLength,entrySize;
-            size_t position = strlen(shouldBe)+1;
+            ssize_t position = strlen(shouldBe)+1;
             bool foundAProblem = false;
             char *buffer;
             std::string name;
@@ -450,16 +455,16 @@ void DTDataFileContent::SaveIndexBlock(void)
         file.MoveToEnd();
         isAtEnd = true;
     }
-    off_t startOfVariable = file.Position();
+    long long int startOfVariable = file.Position();
     
-    int posInBuffer = 0, lengthOfBuffer = 10000;
+    ssize_t posInBuffer = 0, lengthOfBuffer = 10000;
     DTMutableCharArray buffer(lengthOfBuffer);
     char *bufferD = buffer.Pointer();
     
     map<string,DTDataEntry>::const_iterator mapIterator;
     DTDataEntry fileEntry;
     string name;
-    int strLen;
+    ssize_t strLen;
     
     buffer(0) = 1; // Version number
     posInBuffer = 1;
@@ -496,7 +501,7 @@ void DTDataFileContent::SaveIndexBlock(void)
     memcpy(bufferD+posInBuffer,endString.c_str(),strLen+1);
     posInBuffer += strLen+1;
     
-    memcpy(bufferD+posInBuffer,(char *)&startOfVariable,8);
+    memcpy(bufferD+posInBuffer,(char *)&startOfVariable,sizeof(long long int));
     posInBuffer += 8;
     
     buffer = TruncateSize(buffer,posInBuffer);
@@ -1161,7 +1166,7 @@ DTList<std::string> DTDataFile::AllVariableNames(void) const
 }
 
 struct DTDataFilePosString {
-    long int pos;
+    DTFilePosition pos;
     std::string description;
 
     bool operator<(const DTDataFilePosString &A) const {return (pos<A.pos);}
@@ -1282,12 +1287,32 @@ void DTDataFile::printInfo(void) const
 #endif
 }
 
+bool DTDataFile::IsOpen(void) const
+{
+    return content->file.IsOpen();
+}
+
 bool DTDataFile::Contains(const std::string &name) const
 {
     content->Lock();
     DTDataEntry entry = FindVariable(name);
     content->Unlock();
     return (entry.location>=0);
+}
+
+bool DTDataFile::SizeOf(const std::string &name,int &m,int &n,int &o) const
+{
+    content->Lock();
+    DTDataEntry entry = FindVariable(name);
+    content->Unlock();
+    if (entry.location<0) {
+        m = n = o = 0;
+        return false;
+    }
+    m = entry.m;
+    n = entry.n;
+    o = entry.o;
+    return true;
 }
 
 bool DTDataFile::IsReadOnly() const
@@ -1320,6 +1345,15 @@ bool DTDataFile::SavedAsInt(const std::string &name) const
     content->Unlock();
     if (entry.location<0) return false;
     return (entry.type==DTDataFile_Signed32Int);
+}
+
+bool DTDataFile::SavedAsFloat(const std::string &name) const
+{
+    content->Lock();
+    DTDataEntry entry = FindVariable(name);
+    content->Unlock();
+    if (entry.location<0) return false;
+    return (entry.type==DTDataFile_Single);
 }
 
 bool DTDataFile::SavedAsDouble(const std::string &name) const
@@ -1356,7 +1390,7 @@ DTDoubleArray DTDataFile::ReadDoubleArray(const std::string &name) const
         return DTDoubleArray();
     }
 
-    long int StartsAt = entry.location;
+    DTFilePosition StartsAt = entry.location;
 
     int m = entry.m;
     int n = entry.n;
@@ -1431,7 +1465,7 @@ DTFloatArray DTDataFile::ReadFloatArray(const std::string &name) const
         return DTFloatArray();
     }
 
-    long int StartsAt = entry.location;
+    DTFilePosition StartsAt = entry.location;
 
     int m = entry.m;
     int n = entry.n;
@@ -1506,7 +1540,7 @@ DTIntArray DTDataFile::ReadIntArray(const std::string &name) const
         return DTIntArray();
     }
 
-    long int StartsAt = entry.location;
+    DTFilePosition StartsAt = entry.location;
 
     int m = entry.m;
     int n = entry.n;
@@ -1581,7 +1615,7 @@ DTCharArray DTDataFile::ReadCharArray(const std::string &name) const
         return DTCharArray();
     }
 
-    long int StartsAt = entry.location;
+    DTFilePosition StartsAt = entry.location;
 
     int m = entry.m;
     int n = entry.n;
@@ -1661,7 +1695,7 @@ DTUCharArray DTDataFile::ReadUCharArray(const std::string &name) const
         return DTUCharArray();
     }
 
-    long int StartsAt = entry.location;
+    DTFilePosition StartsAt = entry.location;
 
     int m = entry.m;
     int n = entry.n;
@@ -1731,7 +1765,7 @@ DTShortIntArray DTDataFile::ReadShortIntArray(const std::string &name) const
         return DTShortIntArray();
     }
 
-    long int StartsAt = entry.location;
+    DTFilePosition StartsAt = entry.location;
 
     int m = entry.m;
     int n = entry.n;
@@ -1806,7 +1840,7 @@ DTUShortIntArray DTDataFile::ReadUShortIntArray(const std::string &name) const
         return DTUShortIntArray();
     }
     
-    long int StartsAt = entry.location;
+    DTFilePosition StartsAt = entry.location;
     
     int m = entry.m;
     int n = entry.n;

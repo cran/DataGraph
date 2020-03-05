@@ -21,7 +21,7 @@ DTShortIntArrayStorage::DTShortIntArrayStorage(ssize_t mv,ssize_t nv,ssize_t ov)
     referenceCount = 1;
     mn = m*n;
 
-    Data = length==0 ? NULL : new short int[length];
+    Data = length==0 ? NULL : new short int[(size_t)length];
 }
 
 DTShortIntArrayStorage::~DTShortIntArrayStorage()
@@ -52,7 +52,7 @@ DTMutableShortIntArray DTShortIntArray::Copy() const
     DTMutableShortIntArray CopyInto(m(),n(),o());
     // Check that the allocation worked.
     if (CopyInto.Length()!=Length()) return CopyInto; // Failed.  Already printed an error message.
-    std::memcpy(CopyInto.Pointer(),Pointer(),Length()*sizeof(short int));
+    std::memcpy(CopyInto.Pointer(),Pointer(),(size_t)Length()*sizeof(short int));
     return CopyInto;
 }
 
@@ -200,7 +200,7 @@ DTMutableShortIntArray TruncateSize(const DTShortIntArray &A,ssize_t length)
     }
 
     DTMutableShortIntArray toReturn(newM,newN,newO);
-    std::memcpy(toReturn.Pointer(),A.Pointer(),length*sizeof(short int));
+    std::memcpy(toReturn.Pointer(),A.Pointer(),(size_t)length*sizeof(short int));
     return toReturn;
 }
 
@@ -237,7 +237,7 @@ DTMutableShortIntArray IncreaseSize(const DTShortIntArray &A,ssize_t addLength)
     }
 
     DTMutableShortIntArray toReturn(newM,newN,newO);
-    std::memcpy(toReturn.Pointer(),A.Pointer(),A.Length()*sizeof(short int));
+    std::memcpy(toReturn.Pointer(),A.Pointer(),(size_t)A.Length()*sizeof(short int));
     return toReturn;
 }
 
@@ -258,8 +258,8 @@ void DTShortIntArray::PrintErrorMessage(ssize_t i,ssize_t j,ssize_t k) const
 
 DTMutableShortIntArray &DTMutableShortIntArray::operator=(short int a)
 {
-    const size_t howManyNumbers = Length();
-    size_t i;
+    const ssize_t howManyNumbers = Length();
+    ssize_t i;
     short int *Data = Pointer();
     for (i=0;i<howManyNumbers;i++)
         Data[i] = a;
@@ -307,7 +307,7 @@ void CopyValues(DTMutableShortIntArray &into,const DTShortIntArray &from)
 		DTErrorMessage("CopyValues(MutableShortIntArray,ShortIntArray)","Incompatible sizes");
 	}
 	else if (into.NotEmpty()) {
-		std::memcpy(into.Pointer(),from.Pointer(),into.Length()*sizeof(short int));
+		std::memcpy(into.Pointer(),from.Pointer(),(size_t)into.Length()*sizeof(short int));
 	}
 }
 
@@ -327,7 +327,7 @@ void MemoryCopy(DTMutableShortIntArray &into,ssize_t intoLocation,const DTShortI
         DTErrorMessage("MemoryCopy","Invalid source range");
         return;
     }
-    if (range.length) std::memcpy(into.Pointer()+intoLocation,from.Pointer()+range.start,range.length*sizeof(short int));
+    if (range.length) std::memcpy(into.Pointer()+intoLocation,from.Pointer()+range.start,(size_t)range.length*sizeof(short int));
 }
 
 void MemoryCopyColumns(DTMutableShortIntArray &into,ssize_t intoLocation,const DTShortIntArray &from,const DTRange &range)
@@ -345,7 +345,7 @@ void MemoryCopyColumns(DTMutableShortIntArray &into,ssize_t intoLocation,const D
         DTErrorMessage("MemoryCopyColumns","Invalid source range");
         return;
     }
-    if (range.length) std::memcpy(into.Pointer()+into.m()*intoLocation,from.Pointer()+into.m()*range.start,range.length*into.m()*sizeof(short int));
+    if (range.length) std::memcpy(into.Pointer()+into.m()*intoLocation,from.Pointer()+into.m()*range.start,(size_t)(range.length*into.m())*sizeof(short int));
 }
 
 void MemoryMove(DTMutableShortIntArray &into,ssize_t intoLocation,const DTRange &range)
@@ -358,7 +358,7 @@ void MemoryMove(DTMutableShortIntArray &into,ssize_t intoLocation,const DTRange 
         DTErrorMessage("MemoryMove","Invalid source range");
         return;
     }
-    if (range.length) memmove(into.Pointer()+intoLocation,into.Pointer()+range.start,range.length*sizeof(short int));
+    if (range.length) memmove(into.Pointer()+intoLocation,into.Pointer()+range.start,(size_t)range.length*sizeof(short int));
 }
 
 void MemoryMoveColumns(DTMutableShortIntArray &into,ssize_t intoLocation,const DTRange &range)
@@ -371,28 +371,28 @@ void MemoryMoveColumns(DTMutableShortIntArray &into,ssize_t intoLocation,const D
         DTErrorMessage("MemoryMoveColumns","Invalid source range");
         return;
     }
-    if (range.length) memmove(into.Pointer()+into.m()*intoLocation,into.Pointer()+into.m()*range.start,range.length*into.m()*sizeof(short int));
+    if (range.length) memmove(into.Pointer()+into.m()*intoLocation,into.Pointer()+into.m()*range.start,(size_t)(range.length*into.m())*sizeof(short int));
 }
 
 DTMutableShortIntArray ExtractIndices(const DTShortIntArray &A,const DTRange &r)
 {
     if (r.end()>A.Length()) {
-        DTErrorMessage("ExtractEntries(DTShortIntArray,Range)","Range is out of bounds");
+        DTErrorMessage("ExtractIndices(DTShortIntArray,Range)","Range is out of bounds");
         return DTMutableShortIntArray();
     }
     
     DTMutableShortIntArray toReturn(r.length);
-    std::memcpy(toReturn.Pointer(), A.Pointer()+r.start, r.length*sizeof(short int));
+    std::memcpy(toReturn.Pointer(), A.Pointer()+r.start, (size_t)r.length*sizeof(short int));
     return toReturn;
 }
 
 short int Minimum(const DTShortIntArray &A)
 {
-    size_t len = A.Length();
+    ssize_t len = A.Length();
     short int minV = 32767;
     
     short int v;
-    size_t i;
+    ssize_t i;
     
     const short int *D = A.Pointer();
     
@@ -406,11 +406,11 @@ short int Minimum(const DTShortIntArray &A)
 
 short int Maximum(const DTShortIntArray &A)
 {
-    size_t len = A.Length();
+    ssize_t len = A.Length();
     short int maxV = 0;
     
     short int v;
-    size_t i;
+    ssize_t i;
     
     const short int *D = A.Pointer();
     

@@ -19,7 +19,7 @@ DTUCharArrayStorage::DTUCharArrayStorage(ssize_t mv,ssize_t nv,ssize_t ov)
     referenceCount = 1;
     mn = m*n;
 
-    Data = length==0 ? NULL : new unsigned char[length];
+    Data = length==0 ? NULL : new unsigned char[(size_t)length];
 }
 
 DTUCharArrayStorage::~DTUCharArrayStorage()
@@ -50,7 +50,7 @@ DTMutableUCharArray DTUCharArray::Copy() const
     DTMutableUCharArray CopyInto(m(),n(),o());
     // Check that the allocation worked.
     if (CopyInto.Length()!=Length()) return CopyInto; // Failed.  Already printed an error message.
-    std::memcpy(CopyInto.Pointer(),Pointer(),Length()*sizeof(unsigned char));
+    std::memcpy(CopyInto.Pointer(),Pointer(),(size_t)Length()*sizeof(unsigned char));
     return CopyInto;
 }
 
@@ -114,8 +114,8 @@ void DTUCharArray::pi(int i) const
         std::cerr << "Out of bounds." << std::endl;
     }
     else {
-        size_t howMany = n();
-        size_t j;
+        ssize_t howMany = n();
+        ssize_t j;
         for (j=0;j<howMany-1;j++) std::cerr << (int)operator()(i,j) << ", ";
         if (howMany>0) std::cerr << (int)operator()(i,howMany-1);
         std::cerr << std::endl;
@@ -130,8 +130,8 @@ void DTUCharArray::pj(int j) const
         std::cerr << "Out of bounds." << std::endl;
     }
     else {
-        size_t howMany = m();
-        size_t i;
+        ssize_t howMany = m();
+        ssize_t i;
         for (i=0;i<howMany-1;i++) std::cerr << (int)operator()(i,j) << ", ";
         if (howMany>0) std::cerr << (int)operator()(howMany-1,j);
         std::cerr << std::endl;
@@ -142,9 +142,9 @@ void DTUCharArray::pj(int j) const
 void DTUCharArray::pall(void) const
 {
 #ifndef DG_NOSTDErrOut
-    size_t mv = m();
-    size_t nv = n();
-    size_t i,j;
+    ssize_t mv = m();
+    ssize_t nv = n();
+    ssize_t i,j;
     if (mv==0) {
         std::cerr << "Empty" << std::endl;
     }
@@ -198,7 +198,7 @@ DTMutableUCharArray TruncateSize(const DTUCharArray &A,ssize_t length)
     }
 
     DTMutableUCharArray toReturn(newM,newN,newO);
-    std::memcpy(toReturn.Pointer(),A.Pointer(),length*sizeof(unsigned char));
+    std::memcpy(toReturn.Pointer(),A.Pointer(),(size_t)length*sizeof(unsigned char));
     return toReturn;
 }
 
@@ -235,7 +235,7 @@ DTMutableUCharArray IncreaseSize(const DTUCharArray &A,ssize_t addLength)
     }
 
     DTMutableUCharArray toReturn(newM,newN,newO);
-    std::memcpy(toReturn.Pointer(),A.Pointer(),A.Length()*sizeof(unsigned char));
+    std::memcpy(toReturn.Pointer(),A.Pointer(),(size_t)A.Length()*sizeof(unsigned char));
     return toReturn;
 }
 
@@ -256,12 +256,16 @@ void DTUCharArray::PrintErrorMessage(ssize_t i,ssize_t j,ssize_t k) const
 
 DTMutableUCharArray &DTMutableUCharArray::operator=(unsigned char a)
 {
-    const size_t howManyNumbers = Length();
-    size_t i;
+    const ssize_t howManyNumbers = Length();
+    ssize_t i;
     unsigned char *Data = Pointer();
-    for (i=0;i<howManyNumbers;i++)
-        Data[i] = a;
-    
+    if (a==0) {
+        memset(Data,0,(size_t)howManyNumbers);
+    }
+    else {
+        for (i=0;i<howManyNumbers;i++)
+            Data[i] = a;
+    }
     return *this;
 }
 
@@ -305,17 +309,17 @@ void CopyValues(DTMutableUCharArray &into,const DTUCharArray &from)
 		DTErrorMessage("CopyValues(MutableUCharArray,UCharArray)","Incompatible sizes");
 	}
 	else if (into.NotEmpty()) {
-		std::memcpy(into.Pointer(),from.Pointer(),into.Length());
+		std::memcpy(into.Pointer(),from.Pointer(),(size_t)into.Length());
 	}
 }
 
 unsigned char Minimum(const DTUCharArray &A)
 {
-    size_t len = A.Length();
+    ssize_t len = A.Length();
     unsigned char minV = 255;
     
     unsigned char v;
-    size_t i;
+    ssize_t i;
     
     const unsigned char *D = A.Pointer();
     
@@ -329,11 +333,11 @@ unsigned char Minimum(const DTUCharArray &A)
 
 unsigned char Maximum(const DTUCharArray &A)
 {
-    size_t len = A.Length();
+    ssize_t len = A.Length();
     unsigned char maxV = 0;
     
     unsigned char v;
-    size_t i;
+    ssize_t i;
     
     const unsigned char *D = A.Pointer();
     

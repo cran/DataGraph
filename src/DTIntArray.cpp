@@ -27,7 +27,7 @@ DTIntArrayStorage::DTIntArrayStorage(ssize_t mv,ssize_t nv,ssize_t ov)
     referenceCount = 1;
     mn = m*n;
 
-    Data = length==0 ? NULL : new int[length];
+    Data = length==0 ? NULL : new int[(size_t)length];
 }
 
 DTIntArrayStorage::~DTIntArrayStorage()
@@ -58,7 +58,7 @@ DTMutableIntArray DTIntArray::Copy() const
     DTMutableIntArray CopyInto(m(),n(),o());
     // Check that the allocation worked.
     if (CopyInto.Length()!=Length()) return CopyInto; // Failed.  Already printed an error message.
-    std::memcpy(CopyInto.Pointer(),Pointer(),Length()*sizeof(int));
+    std::memcpy(CopyInto.Pointer(),Pointer(),(size_t)Length()*sizeof(int));
     return CopyInto;
 }
 
@@ -122,8 +122,8 @@ void DTIntArray::pi(int i) const
         std::cerr << "Out of bounds." << std::endl;
     }
     else {
-        size_t howMany = n();
-        size_t j;
+        ssize_t howMany = n();
+        ssize_t j;
         for (j=0;j<howMany-1;j++) std::cerr << operator()(i,j) << ", ";
         if (howMany>0) std::cerr << operator()(i,howMany-1);
         std::cerr << std::endl;
@@ -138,8 +138,8 @@ void DTIntArray::pj(int j) const
         std::cerr << "Out of bounds." << std::endl;
     }
     else {
-        size_t howMany = m();
-        size_t i;
+        ssize_t howMany = m();
+        ssize_t i;
         for (i=0;i<howMany-1;i++) std::cerr << operator()(i,j) << ", ";
         if (howMany>0) std::cerr << operator()(howMany-1,j);
         std::cerr << std::endl;
@@ -150,9 +150,9 @@ void DTIntArray::pj(int j) const
 void DTIntArray::pall(void) const
 {
 #ifndef DG_NOSTDErrOut
-    size_t mv = m();
-    size_t nv = n();
-    size_t i,j;
+    ssize_t mv = m();
+    ssize_t nv = n();
+    ssize_t i,j;
     if (mv==0) {
         std::cerr << "Empty" << std::endl;
     }
@@ -245,8 +245,8 @@ void DTIntArray::psigns(void) const
 ssize_t DTIntArray::Find(int v) const
 {
     const int *D = Pointer();
-    size_t len = Length();
-    size_t i;
+    ssize_t len = Length();
+    ssize_t i;
     for (i=0;i<len;i++) {
         if (D[i]==v) break;
     }
@@ -269,21 +269,20 @@ DTMutableIntArray CombineRows(const DTIntArray &First,const DTIntArray &Second)
     
     DTMutableIntArray toReturn(First.m()+Second.m(),First.n());
     if (First.n()==1) {
-        std::memcpy(toReturn.Pointer(),First.Pointer(),First.Length()*sizeof(int));
-        std::memcpy(toReturn.Pointer()+First.Length(),Second.Pointer(),Second.Length()*sizeof(int));
-        
+        std::memcpy(toReturn.Pointer(),First.Pointer(),(size_t)First.Length()*sizeof(int));
+        std::memcpy(toReturn.Pointer()+First.Length(),Second.Pointer(),(size_t)Second.Length()*sizeof(int));
     }
     else {
-        int j,n = First.n();
+        ssize_t j,n = First.n();
         const int *FirstD = First.Pointer();
         const int *SecondD = Second.Pointer();
         int *toReturnD = toReturn.Pointer();
-        int mFirst = First.m();
-        int mSecond = Second.m();
-        int stride = toReturn.m();
+        ssize_t mFirst = First.m();
+        ssize_t mSecond = Second.m();
+        ssize_t stride = toReturn.m();
         for (j=0;j<n;j++) {
-            std::memcpy(toReturnD+j*stride,FirstD+j*mFirst,mFirst*4);
-            std::memcpy(toReturnD+j*stride+mFirst,SecondD+j*mSecond,mSecond*4);
+            std::memcpy(toReturnD+j*stride,FirstD+j*mFirst,(size_t)mFirst*4);
+            std::memcpy(toReturnD+j*stride+mFirst,SecondD+j*mSecond,(size_t)mSecond*4);
         }
     }
     
@@ -304,8 +303,8 @@ DTMutableIntArray CombineColumns(const DTIntArray &First,const DTIntArray &Secon
     }
     
     DTMutableIntArray toReturn(First.m(),First.n()+Second.n());
-    std::memcpy(toReturn.Pointer(),First.Pointer(),First.Length()*sizeof(int));
-    std::memcpy(toReturn.Pointer()+First.Length(),Second.Pointer(),Second.Length()*sizeof(int));
+    std::memcpy(toReturn.Pointer(),First.Pointer(),(size_t)First.Length()*sizeof(int));
+    std::memcpy(toReturn.Pointer()+First.Length(),Second.Pointer(),(size_t)Second.Length()*sizeof(int));
     
     return toReturn;
 }
@@ -324,7 +323,7 @@ DTMutableIntArray TruncateSize(const DTIntArray &A,ssize_t length)
         return DTMutableIntArray();
     }
 
-    size_t newM,newN,newO;
+    ssize_t newM,newN,newO;
     if (A.o()>1) {
         if (length%(A.m()*A.n())!=0) {
             DTErrorMessage("TruncateSize(Array,Length)","Invalid new dimension");
@@ -350,7 +349,7 @@ DTMutableIntArray TruncateSize(const DTIntArray &A,ssize_t length)
     }
 
     DTMutableIntArray toReturn(newM,newN,newO);
-    std::memcpy(toReturn.Pointer(),A.Pointer(),length*sizeof(int));
+    std::memcpy(toReturn.Pointer(),A.Pointer(),(size_t)length*sizeof(int));
     return toReturn;
 }
 
@@ -366,7 +365,7 @@ DTMutableIntArray IncreaseSize(const DTIntArray &A,ssize_t addLength)
         return DTMutableIntArray();
     }
 
-    size_t newM,newN,newO;
+    ssize_t newM,newN,newO;
     if (A.o()>1) {
         if (addLength%(A.m()*A.n())!=0) {
             DTErrorMessage("IncreaseSize(Array,Length)","Length needs to be a multiple of m*n");
@@ -392,7 +391,7 @@ DTMutableIntArray IncreaseSize(const DTIntArray &A,ssize_t addLength)
     }
 
     DTMutableIntArray toReturn(newM,newN,newO);
-    std::memcpy(toReturn.Pointer(),A.Pointer(),A.Length()*sizeof(int));
+    std::memcpy(toReturn.Pointer(),A.Pointer(),(size_t)A.Length()*sizeof(int));
     return toReturn;
 }
 
@@ -413,13 +412,28 @@ void DTIntArray::PrintErrorMessage(ssize_t i,ssize_t j,ssize_t k) const
 
 DTMutableIntArray &DTMutableIntArray::operator=(int a)
 {
-    const size_t howManyNumbers = Length();
-    size_t i;
+    const ssize_t howManyNumbers = Length();
+    ssize_t i;
     int *Data = Pointer();
-    for (i=0;i<howManyNumbers;i++)
+    if (a==0) {
+        memset(Data,0,(size_t)howManyNumbers*sizeof(int));
+    }
+    else {
+        for (i=0;i<howManyNumbers;i++)
         Data[i] = a;
+    }
     
     return *this;
+}
+
+void DTMutableIntArray::operator+=(int v)
+{
+    DTPlusEqualsScalar<DTMutableIntArray,int>(*this,v);
+}
+
+void DTMutableIntArray::operator-=(int v)
+{
+    DTMinusEqualsScalar<DTMutableIntArray,int>(*this,v);
 }
 
 bool operator==(const DTIntArray &A,const DTIntArray &B)
@@ -452,7 +466,7 @@ DTMutableIntArray Reshape(const DTIntArray &A,ssize_t m,ssize_t n,ssize_t o)
 
     DTMutableIntArray toReturn(m,n,o);
     if (toReturn.Length()) {
-        std::memcpy(toReturn.Pointer(),A.Pointer(),A.Length()*sizeof(int));
+        std::memcpy(toReturn.Pointer(),A.Pointer(),(size_t)A.Length()*sizeof(int));
     }
 
     return toReturn;
@@ -472,8 +486,8 @@ DTMutableIntArray FlipJ(const DTIntArray &A)
 
 ssize_t FindEntry(const DTIntArray &A,int val)
 {
-    size_t Len = A.Length();
-    size_t i;
+    ssize_t Len = A.Length();
+    ssize_t i;
     for (i=0;i<Len;i++) {
         if (A(i)==val) break;
     }
@@ -485,9 +499,9 @@ ssize_t FindEntryInSorted(const DTIntArray &A,int val)
     if (A.Length()==0 || A(0)>val || A(A.Length()-1)<val)
         return -1;
     
-    size_t StrictlyBefore = A.Length();
-    size_t AfterOrEqual = 0;
-    size_t LookAt;
+    ssize_t StrictlyBefore = A.Length();
+    ssize_t AfterOrEqual = 0;
+    ssize_t LookAt;
     while (StrictlyBefore-AfterOrEqual>1) {
         LookAt = (AfterOrEqual+StrictlyBefore)/2;
         if (val<A(LookAt))
@@ -522,7 +536,7 @@ void CopyValues(DTMutableIntArray &into,const DTIntArray &from)
 		DTErrorMessage("CopyValues(MutableIntArray,IntArray)","Incompatible sizes");
 	}
 	else if (into.NotEmpty()) {
-		std::memcpy(into.Pointer(),from.Pointer(),into.Length()*sizeof(int));
+		std::memcpy(into.Pointer(),from.Pointer(),(size_t)into.Length()*sizeof(int));
 	}
 }
 
@@ -533,8 +547,8 @@ void CopyValuesIntoAndAdd(DTMutableIntArray &into,ssize_t offset,const DTIntArra
 		return;
 	}
 	int *D = into.Pointer()+offset;
-	std::memcpy(D,from.Pointer(),sizeof(int)*from.Length());
-	size_t i,howMany = from.Length();
+	std::memcpy(D,from.Pointer(),sizeof(int)*(size_t)from.Length());
+	ssize_t i,howMany = from.Length();
 	for (i=0;i<howMany;i++)
 		D[i] += add;
 }
@@ -551,7 +565,7 @@ void CopyIntoColumn(DTMutableIntArray &into,const DTIntArray &list,ssize_t j)
         DTErrorMessage("CopyIntoColumns(into,list,j)","j out of bounds");
     }
     else {
-        std::memcpy(into.Pointer()+j*into.m(),list.Pointer(),into.m()*sizeof(int));
+        std::memcpy(into.Pointer()+j*into.m(),list.Pointer(),(size_t)into.m()*sizeof(int));
     }
 }
 
@@ -570,7 +584,7 @@ void CopyIntoColumns(DTMutableIntArray &into,const DTRange &intoRange,const DTIn
         DTErrorMessage("CopyIntoColumns(into,range,from,range)","from.m()!=to.m()");
     }
     else {
-        std::memcpy(into.Pointer()+intoRange.start*into.m(),from.Pointer()+fromRange.start*from.m(),from.m()*intoRange.length*sizeof(int));
+        std::memcpy(into.Pointer()+intoRange.start*into.m(),from.Pointer()+fromRange.start*from.m(),(size_t)(from.m()*intoRange.length)*sizeof(int));
     }
 }
 
@@ -590,7 +604,7 @@ void MemoryCopy(DTMutableIntArray &into,ssize_t intoLocation,const DTIntArray &f
         DTErrorMessage("MemoryCopy","Invalid source range");
         return;
     }
-    std::memcpy(into.Pointer()+intoLocation,from.Pointer()+fromLocation,numberOfEntries*sizeof(int));
+    std::memcpy(into.Pointer()+intoLocation,from.Pointer()+fromLocation,(size_t)numberOfEntries*sizeof(int));
 }
 
 void MemoryCopyColumns(DTMutableIntArray &into,ssize_t intoLocation,const DTIntArray &from,ssize_t fromLocation,ssize_t numberOfColumns)
@@ -613,7 +627,7 @@ void MemoryCopyColumns(DTMutableIntArray &into,ssize_t intoLocation,const DTIntA
         DTErrorMessage("MemoryCopyColumns","Invalid source range");
         return;
     }
-    std::memcpy(into.Pointer()+into.m()*intoLocation,from.Pointer()+into.m()*fromLocation,numberOfColumns*into.m()*sizeof(int));
+    std::memcpy(into.Pointer()+into.m()*intoLocation,from.Pointer()+into.m()*fromLocation,(size_t)(numberOfColumns*into.m())*sizeof(int));
 }
 
 void MemoryMove(DTMutableIntArray &into,ssize_t intoLocation,ssize_t fromLocation,ssize_t numberOfEntries)
@@ -631,7 +645,7 @@ void MemoryMove(DTMutableIntArray &into,ssize_t intoLocation,ssize_t fromLocatio
         DTErrorMessage("MemoryMove","Invalid source range");
         return;
     }
-    memmove(into.Pointer()+intoLocation,into.Pointer()+fromLocation,numberOfEntries*sizeof(int));
+    memmove(into.Pointer()+intoLocation,into.Pointer()+fromLocation,(size_t)numberOfEntries*sizeof(int));
 }
 
 void MemoryMoveColumns(DTMutableIntArray &into,ssize_t intoLocation,ssize_t fromLocation,ssize_t numberOfColumns)
@@ -649,7 +663,7 @@ void MemoryMoveColumns(DTMutableIntArray &into,ssize_t intoLocation,ssize_t from
         DTErrorMessage("MemoryMoveColumns","Invalid source range");
         return;
     }
-    memmove(into.Pointer()+into.m()*intoLocation,into.Pointer()+into.m()*fromLocation,numberOfColumns*into.m()*sizeof(int));
+    memmove(into.Pointer()+into.m()*intoLocation,into.Pointer()+into.m()*fromLocation,(size_t)(numberOfColumns*into.m())*sizeof(int));
 }
 
 DTMutableIntArray ExtractColumns(const DTIntArray &A,const DTIntArray &indices)
@@ -705,7 +719,7 @@ DTMutableIntArray ExtractColumns(const DTIntArray &A,const DTRange &r)
     }
     
     DTMutableIntArray toReturn(A.m(),r.length);
-    std::memcpy(toReturn.Pointer(), A.Pointer()+r.start*A.m(), r.length*A.m()*sizeof(int));
+    std::memcpy(toReturn.Pointer(), A.Pointer()+r.start*A.m(),(size_t)(r.length*A.m())*sizeof(int));
     return toReturn;
 }
 
@@ -748,22 +762,22 @@ DTMutableIntArray ExtractIndices(const DTIntArray &A,const DTIntArray &indices)
 DTMutableIntArray ExtractIndices(const DTIntArray &A,const DTRange &r)
 {
     if (r.end()>A.Length()) {
-        DTErrorMessage("ExtractEntries(IntArray,Range)","Range is out of bounds");
+        DTErrorMessage("ExtractIndices(IntArray,Range)","Range is out of bounds");
         return DTMutableIntArray();
     }
     
     DTMutableIntArray toReturn(r.length);
-    std::memcpy(toReturn.Pointer(), A.Pointer()+r.start, r.length*sizeof(int));
+    std::memcpy(toReturn.Pointer(), A.Pointer()+r.start, (size_t)r.length*sizeof(int));
     return toReturn;
 }
 
 int Minimum(const DTIntArray &A)
 {
-    size_t len = A.Length();
+    ssize_t len = A.Length();
     int minV = INT32_MAX;
     
     int v;
-    size_t i;
+    ssize_t i;
     
     const int *D = A.Pointer();
     
@@ -777,11 +791,11 @@ int Minimum(const DTIntArray &A)
 
 int Maximum(const DTIntArray &A)
 {
-    size_t len = A.Length();
-    int maxV = 0;
+    ssize_t len = A.Length();
+    int maxV = INT32_MIN;
     
     int v;
-    size_t i;
+    ssize_t i;
     
     const int *D = A.Pointer();
     
@@ -793,4 +807,24 @@ int Maximum(const DTIntArray &A)
     return maxV;
 }
 
+void Range(const DTIntArray &A,int &minVRet,int &maxVRet)
+{
+    ssize_t len = A.Length();
+    int minV = INT32_MAX;
+    int maxV = INT32_MIN;
+    
+    int v;
+    ssize_t i;
+    
+    const int *D = A.Pointer();
+    
+    for (i=0;i<len;i++) {
+        v = D[i];
+        minV = (v < minV ? v : minV);
+        maxV = (maxV < v ? v : maxV);
+    }
+    
+    minVRet = minV;
+    maxVRet = maxV;
+}
 

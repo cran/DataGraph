@@ -16,7 +16,7 @@
 // An array of char numbers.  See comments inside DTDoubleArray for more information.
 class DTCharArrayStorage {
 public:
-    DTCharArrayStorage(size_t mv,size_t nv,size_t ov);
+    DTCharArrayStorage(ssize_t mv,ssize_t nv,ssize_t ov);
     ~DTCharArrayStorage();
 
     DTLock accessLock;
@@ -44,7 +44,7 @@ public:
 
 protected:
     // If you get a notice that this is protected, change DTCharArray to DTMutableCharArray
-    explicit DTCharArray(size_t mv,size_t nv=1,size_t ov=1) : Storage(new DTCharArrayStorage(mv,nv,ov)), invalidEntry(0) {}
+    explicit DTCharArray(ssize_t mv,ssize_t nv=1,ssize_t ov=1) : Storage(new DTCharArrayStorage(mv,nv,ov)), invalidEntry(0) {}
 
 public:
     DTMutableCharArray Copy() const;
@@ -56,6 +56,7 @@ public:
     ssize_t Length() const {return Storage->length;}
     bool IsEmpty() const {return (Storage->length==0);}
     bool NotEmpty() const {return (Storage->length!=0);}
+    ssize_t MemoryUsed(void) const {return Length();}
 
     // Low level access
     int ReferenceCount() const {Storage->accessLock.Lock(); int refCnt = Storage->referenceCount; Storage->accessLock.Unlock(); return refCnt;}
@@ -95,7 +96,7 @@ class DTMutableCharArray : public DTCharArray
 {
 public:
     DTMutableCharArray() : DTCharArray() {}
-    explicit DTMutableCharArray(size_t mv,size_t nv=1,size_t ov=1) : DTCharArray(mv,nv,ov) {}
+    explicit DTMutableCharArray(ssize_t mv,ssize_t nv=1,ssize_t ov=1) : DTCharArray(mv,nv,ov) {}
     DTMutableCharArray(const DTMutableCharArray &A) : DTCharArray(A) {}
 
     DTMutableCharArray &operator=(const DTMutableCharArray &A) {DTCharArray::operator=(A); return *this;}

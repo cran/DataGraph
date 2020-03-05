@@ -9,12 +9,14 @@
 #include "DTDataStorage.h"
 #include "DTList.h"
 
+struct DTRange;
+
 class DTStringList {
 public:
     explicit DTStringList() : characters(), offsets() {}
     DTStringList(const DTCharArray &); // Compute the offsets
     DTStringList(const DTCharArray &,const DTIntArray &);
-    DTStringList(const DTList<std::string> &entries);
+    explicit DTStringList(const DTList<std::string> &entries);
     
     size_t NumberOfStrings(void) const {return offsets.Length();}
     std::string operator()(ssize_t) const;
@@ -23,11 +25,14 @@ public:
     DTIntArray Offsets(void) const {return offsets;}
     
     void pinfo(void) const;
+    void pall(void) const;
     
 private:
     DTCharArray characters;
     DTIntArray offsets;
 };
+
+extern DTStringList ExtractIndices(const DTStringList &A,const DTRange &);
 
 // Reading and writing
 extern void Read(const DTDataStorage &input,const std::string &name,DTStringList &toReturn);

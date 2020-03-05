@@ -7,6 +7,8 @@
 #include "DTUtilities.h"
 
 #include <cstring>
+#include <iostream>
+#include <string>
 
 DTUShortIntArrayStorage::DTUShortIntArrayStorage(ssize_t mv,ssize_t nv,ssize_t ov)
 {
@@ -19,7 +21,7 @@ DTUShortIntArrayStorage::DTUShortIntArrayStorage(ssize_t mv,ssize_t nv,ssize_t o
     referenceCount = 1;
     mn = m*n;
 
-    Data = length==0 ? NULL : new unsigned short int[length];
+    Data = length==0 ? NULL : new unsigned short int[(size_t)length];
 }
 
 DTUShortIntArrayStorage::~DTUShortIntArrayStorage()
@@ -50,7 +52,7 @@ DTMutableUShortIntArray DTUShortIntArray::Copy() const
     DTMutableUShortIntArray CopyInto(m(),n(),o());
     // Check that the allocation worked.
     if (CopyInto.Length()!=Length()) return CopyInto; // Failed.  Already printed an error message.
-    std::memcpy(CopyInto.Pointer(),Pointer(),Length()*sizeof(unsigned short int));
+    std::memcpy(CopyInto.Pointer(),Pointer(),(size_t)Length()*sizeof(unsigned short int));
     return CopyInto;
 }
 
@@ -198,7 +200,7 @@ DTMutableUShortIntArray TruncateSize(const DTUShortIntArray &A,ssize_t length)
     }
 
     DTMutableUShortIntArray toReturn(newM,newN,newO);
-    std::memcpy(toReturn.Pointer(),A.Pointer(),length*sizeof(unsigned short int));
+    std::memcpy(toReturn.Pointer(),A.Pointer(),(size_t)length*sizeof(unsigned short int));
     return toReturn;
 }
 
@@ -235,7 +237,7 @@ DTMutableUShortIntArray IncreaseSize(const DTUShortIntArray &A,ssize_t addLength
     }
 
     DTMutableUShortIntArray toReturn(newM,newN,newO);
-    std::memcpy(toReturn.Pointer(),A.Pointer(),A.Length()*sizeof(unsigned short int));
+    std::memcpy(toReturn.Pointer(),A.Pointer(),(size_t)A.Length()*sizeof(unsigned short int));
     return toReturn;
 }
 
@@ -305,29 +307,29 @@ void CopyValues(DTMutableUShortIntArray &into,const DTUShortIntArray &from)
 		DTErrorMessage("CopyValues(MutableUShortIntArray,UShortIntArray)","Incompatible sizes");
 	}
 	else if (into.NotEmpty()) {
-		std::memcpy(into.Pointer(),from.Pointer(),into.Length()*sizeof(unsigned short int));
+		std::memcpy(into.Pointer(),from.Pointer(),(size_t)into.Length()*sizeof(unsigned short int));
 	}
 }
 
 DTMutableUShortIntArray ExtractIndices(const DTUShortIntArray &A,const DTRange &r)
 {
     if (r.end()>A.Length()) {
-        DTErrorMessage("ExtractEntries(DTUShortIntArray,Range)","Range is out of bounds");
+        DTErrorMessage("ExtractIndices(DTUShortIntArray,Range)","Range is out of bounds");
         return DTMutableUShortIntArray();
     }
     
     DTMutableUShortIntArray toReturn(r.length);
-    std::memcpy(toReturn.Pointer(), A.Pointer()+r.start, r.length*sizeof(unsigned short int));
+    std::memcpy(toReturn.Pointer(), A.Pointer()+r.start, (size_t)r.length*sizeof(unsigned short int));
     return toReturn;
 }
 
 unsigned short int Minimum(const DTUShortIntArray &A)
 {
-    size_t len = A.Length();
+    ssize_t len = A.Length();
     unsigned short int minV = 32767;
     
     unsigned short int v;
-    size_t i;
+    ssize_t i;
     
     const unsigned short int *D = A.Pointer();
     
@@ -341,11 +343,11 @@ unsigned short int Minimum(const DTUShortIntArray &A)
 
 unsigned short int Maximum(const DTUShortIntArray &A)
 {
-    size_t len = A.Length();
+    ssize_t len = A.Length();
     unsigned short int maxV = 0;
     
     unsigned short int v;
-    size_t i;
+    ssize_t i;
     
     const unsigned short int *D = A.Pointer();
     

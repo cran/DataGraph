@@ -105,6 +105,7 @@ public:
     // Read in a single number (binary)
     int Read_int32(Endian endian=DTFile::LittleEndian) const;
     unsigned int Read_uint32(Endian endian=DTFile::LittleEndian) const;
+    ssize_t Read_int64(Endian endian=DTFile::LittleEndian) const;
     float Read_float(Endian endian=DTFile::LittleEndian) const;
     double Read_double(Endian endian=DTFile::LittleEndian) const;
 

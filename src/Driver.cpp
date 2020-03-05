@@ -94,13 +94,13 @@ DTTableColumn ConvertFromIndexedStrings(const std::string &name,SEXP x)
 {
     if (TYPEOF(x) != INTSXP) {
         Rcout << "The column " << name << " is corrupt (type)" << endl;
-        return DTTableColumn(name);
+        return DTTableColumn::NumberColumn(name,DTDoubleArray());
     }
     
     SEXP x_levels = Rf_getAttrib(x, Rf_install("levels"));
     if (TYPEOF(x_levels) != STRSXP) {
         Rcout << "The column " << name << " is corrupt (levels)" << endl;
-        return DTTableColumn(name);
+        return DTTableColumn::NumberColumn(name,DTDoubleArray());
     }
     
     int n = Rf_length(x);
@@ -242,7 +242,7 @@ DTTableColumn ConvertFromDateColumn(const std::string &name,SEXP x)
     }
     else {
         Rcout << "The column " << name << " is not a properly saved date column" << endl;
-        return DTTableColumn(name);
+        return DTTableColumn::NumberColumn(name,DTDoubleArray());
     }
 }
 
@@ -276,7 +276,7 @@ DTTableColumn ConvertFromTimeStampColumn(const std::string &name,SEXP x)
     }
     else {
         Rcout << "The column " << name << " is a time stamp, but using an unexpected number format" << endl;
-        return DTTableColumn(name);
+        return DTTableColumn::NumberColumn(name,DTDoubleArray());
     }
 }
 
@@ -302,7 +302,7 @@ DTTableColumn ConvertSingleColumn(const std::string &name,SEXP x)
     }
     else {
         Rcout << name << " : can not be converted, please report (" << TYPEOF(x) << ") " << Rf_type2char(TYPEOF(x)) << endl;
-        return DTTableColumn(name);
+        return DTTableColumn::NumberColumn(name,DTDoubleArray());
     }
 }
 
@@ -374,7 +374,7 @@ DTTableColumn ConvertToColumn(const std::string &name,SEXP x)
         return DTTableColumn::NumberColumn(name,DTDoubleArray());
     } else if (Rf_inherits(x, "dist")) {
         Rcout << "Can't save a dist class yet.  Not clear what it should map to in DataGraph" << endl;
-        return DTTableColumn(name);
+        return DTTableColumn::NumberColumn(name,DTDoubleArray());
     } else {
         if (typeOfX==19) {
             if (Rf_isFrame(x)) {
@@ -411,7 +411,7 @@ DTTableColumn ConvertToColumn(const std::string &name,SEXP x)
         }
     }
     
-    return DTTableColumn(name);
+    return DTTableColumn::NumberColumn(name,DTDoubleArray());
 }
 
 
@@ -451,11 +451,24 @@ DTTableColumn ConvertToColumn(const std::string &name,SEXP x)
  #define FUNSXP      99    // Closure or Builtin or Special
  */
 
+/*
+ 
+ library(devtools)
+ install()
+ library(DataGraph)
+
+ 
+ openDTBin("/tmp/t")
+ addDTBin("/tmp/t","iris",iris)
+ closeDTBin("/tmp/t")
+
+ */
+
 DTTable ConvertToTable(DataFrame df)
 {
     DTTableColumn rowNameColumn;
     SEXP rowNames = Rf_getAttrib(df, Rf_install("row.names"));
-    if (TYPEOF(rowNames)==STRSXP && 1) {
+    if (TYPEOF(rowNames)==STRSXP) {
         rowNameColumn = ConvertToColumn("row.names",rowNames);
     }
     // Rcout << "type = " << Rf_type2char(TYPEOF(rown)) << endl;
@@ -464,14 +477,15 @@ DTTable ConvertToTable(DataFrame df)
     std::string name;
     int howManyColumnsInFrame = df.size();
     int howManyColumns = howManyColumnsInFrame;
-    if (rowNameColumn.IsEmpty()==false) {
+    if (rowNameColumn.NotEmpty()) {
         howManyColumns++;
     }
     DTMutableList<DTTableColumn> columns(howManyColumns);
     int posInColumns = 0;
-    if (rowNameColumn.IsEmpty()==false) {
+    if (rowNameColumn.NotEmpty()) {
         columns(posInColumns++) = rowNameColumn;
     }
+
     
     for (int i=0;i<howManyColumnsInFrame;i++) {
         name = std::string(names[i]);
@@ -597,7 +611,7 @@ DTTable ConvertFromTimeSeries(const std::string &name,SEXP x)
     }
 
     int typeOfX = TYPEOF(x);
-    
+
     DTTableColumn col;
     if (typeOfX==REALSXP) {
         col = ConvertFromRealColumn("value",x);
@@ -617,7 +631,6 @@ DTTable ConvertFromTimeSeries(const std::string &name,SEXP x)
     }
 
     // The time values are saved
-    
     SEXP info = Rf_getAttrib(x, Rf_install("tsp"));
     DTMutableDoubleArray da;
     ConvertToDoubleArray(info,da,mask);
@@ -634,7 +647,7 @@ DTTable ConvertFromTimeSeries(const std::string &name,SEXP x)
     int howManyRows = col.NumberOfRows();
     if (rowsInMatrix==0)
         rowsInMatrix = howManyRows;
-    
+
     DTMutableDoubleArray timeValues(rowsInMatrix);
     timeValues = NAN;
     double t;
@@ -674,7 +687,6 @@ DTTable ConvertFromTimeSeries(const std::string &name,SEXP x)
         }
     }
     DTTableColumn dateColumn = DTTableColumn::DateColumn("date",timeValues,DTCharArray());
-    
     
     DTMutableList<DTTableColumn> columns;
     if (columnsInMatrix==0) {
@@ -1070,10 +1082,8 @@ void addDTBin(const std::string& path,const std::string &name,SEXP data,double t
     
     // See if this should be converted to a table.  Various reasons for that,
     // data frames, time series and matrices that have named dimensions should be saved into a table.
-
     DTTable theTable;
     if (ConvertToTableIfPossible(name,data,theTable)) {
-
         if (information.variableInfo.Contains(name)) {
             // Argument validation
             if (information.variableInfo(name).type!="Table") {

@@ -29,7 +29,7 @@ public:
     DTLock() {}
     ~DTLock() {}
     
-    bool operator==(const DTLock &L) const {return false;}
+    bool operator==(const DTLock &) const {return false;}
 
     void Lock(void) const {}
     bool TryLock(void) const {return true;}

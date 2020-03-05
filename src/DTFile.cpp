@@ -280,7 +280,7 @@ bool DTFile::Find(char c) const
     DTFilePosition startsAt = nowAt;
     
     DTMutableCharArray buffer(1024);
-    ssize_t i,howMuchToRead;
+    DTFilePosition i,howMuchToRead;
     bool foundIt = false;
     while (1) {
         howMuchToRead = 1024;
@@ -654,6 +654,21 @@ int DTFile::Read_int32(Endian endian) const
         if (endian!=DTFile::EndianForMachine()) DTSwap4Bytes((unsigned char *)&toReturn,4); // Swap
     }
 
+    return toReturn;
+}
+
+ssize_t DTFile::Read_int64(Endian endian) const
+{
+    ssize_t toReturn = 0;
+    
+    if (!IsOpen())
+        DTErrorMessage("DTFile::Read_int64(Endian)","No file");
+    else if (fread(&toReturn,8,1,FILEForReading())!=1)
+        DTErrorMessage("DTFile::Read_int64(Endian)","Could not read the number");
+    else {
+        if (endian!=DTFile::EndianForMachine()) DTSwap8Bytes((unsigned char *)&toReturn,8); // Swap
+    }
+    
     return toReturn;
 }
 

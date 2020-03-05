@@ -15,15 +15,15 @@
 #include <vector>
 #include <unistd.h>
 
-extern void DTErrorOutOfRange(std::string type,ssize_t i,size_t m);
-extern void DTErrorOutOfRange(std::string type,ssize_t i,ssize_t j,size_t m,size_t n);
-extern void DTErrorOutOfRange(std::string type,ssize_t i,ssize_t j,ssize_t k,size_t m,size_t n,size_t o);
+extern void DTErrorOutOfRange(std::string type,ssize_t i,ssize_t m);
+extern void DTErrorOutOfRange(std::string type,ssize_t i,ssize_t j,ssize_t m,ssize_t n);
+extern void DTErrorOutOfRange(std::string type,ssize_t i,ssize_t j,ssize_t k,ssize_t m,ssize_t n,ssize_t o);
 
 extern void DTWarningMessage(std::string fcn,std::string msg);
 extern void DTErrorMessage(std::string fcn,std::string msg);
 extern void DTErrorMessage(std::string msg);
 
-extern size_t DTHowManyErrors();
+extern ssize_t DTHowManyErrors();
 
 extern std::vector<std::string> &DTErrorList(void);
 

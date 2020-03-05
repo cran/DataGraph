@@ -8,7 +8,7 @@
 
 #include <cstring>
 
-DTCharArrayStorage::DTCharArrayStorage(size_t mv,size_t nv,size_t ov)
+DTCharArrayStorage::DTCharArrayStorage(ssize_t mv,ssize_t nv,ssize_t ov)
 : accessLock(), m(0), n(0), o(0), mn(0), length(0), referenceCount(1), Data(NULL) {
     // Check if it's called correctly.
     m = mv>0 ? mv : 0;
@@ -18,7 +18,7 @@ DTCharArrayStorage::DTCharArrayStorage(size_t mv,size_t nv,size_t ov)
     if (length==0) m = n = o = 0;
     mn = m*n;
 
-    Data = length==0 ? NULL : new char[length];
+    Data = length==0 ? NULL : new char[(size_t)length];
 }
 
 DTCharArrayStorage::~DTCharArrayStorage()
@@ -49,7 +49,7 @@ DTMutableCharArray DTCharArray::Copy() const
     DTMutableCharArray CopyInto(m(),n(),o());
     // Check that the allocation worked.
     if (CopyInto.Length()!=Length()) return CopyInto; // Failed.  Already printed an error message.
-    std::memcpy(CopyInto.Pointer(),Pointer(),Length()*sizeof(char));
+    std::memcpy(CopyInto.Pointer(),Pointer(),(size_t)Length()*sizeof(char));
     return CopyInto;
 }
 
@@ -113,8 +113,8 @@ void DTCharArray::pi(int i) const
         std::cerr << "Out of bounds." << std::endl;
     }
     else {
-        size_t howMany = n();
-        size_t j;
+        ssize_t howMany = n();
+        ssize_t j;
         for (j=0;j<howMany-1;j++) std::cerr << (int)operator()(i,j) << ", ";
         if (howMany>0) std::cerr << (int)operator()(i,howMany-1);
         std::cerr << std::endl;
@@ -129,8 +129,8 @@ void DTCharArray::pj(int j) const
         std::cerr << "Out of bounds." << std::endl;
     }
     else {
-        size_t howMany = m();
-        size_t i;
+        ssize_t howMany = m();
+        ssize_t i;
         for (i=0;i<howMany-1;i++) std::cerr << (int)operator()(i,j) << ", ";
         if (howMany>0) std::cerr << (int)operator()(howMany-1,j);
         std::cerr << std::endl;
@@ -141,9 +141,9 @@ void DTCharArray::pj(int j) const
 void DTCharArray::pall(void) const
 {
 #ifndef DG_NOSTDErrOut
-    size_t mv = m();
-    size_t nv = n();
-    size_t i,j;
+    ssize_t mv = m();
+    ssize_t nv = n();
+    ssize_t i,j;
     if (mv==0) {
         std::cerr << "Empty" << std::endl;
     }
@@ -160,9 +160,9 @@ void DTCharArray::pall(void) const
 void DTCharArray::psigns(void) const
 {
 #ifndef DG_NOSTDErrOut
-    size_t mv = m();
-    size_t nv = n();
-    size_t i,j;
+    ssize_t mv = m();
+    ssize_t nv = n();
+    ssize_t i,j;
     if (mv==0) {
         std::cerr << "Empty" << std::endl;
     }
@@ -201,7 +201,7 @@ DTMutableCharArray TruncateSize(const DTCharArray &A,ssize_t length)
         return DTMutableCharArray();
     }
 
-    size_t newM,newN,newO;
+    ssize_t newM,newN,newO;
     if (A.o()>1) {
         if (length%(A.m()*A.n())!=0) {
             DTErrorMessage("TruncateSize(Array,Length)","Invalid new dimension");
@@ -227,7 +227,7 @@ DTMutableCharArray TruncateSize(const DTCharArray &A,ssize_t length)
     }
 
     DTMutableCharArray toReturn(newM,newN,newO);
-    std::memcpy(toReturn.Pointer(),A.Pointer(),length*sizeof(char));
+    std::memcpy(toReturn.Pointer(),A.Pointer(),(size_t)length*sizeof(char));
     return toReturn;
 }
 
@@ -238,7 +238,7 @@ DTMutableCharArray IncreaseSize(const DTCharArray &A,ssize_t addLength)
         return DTMutableCharArray();
     }
 
-    size_t newM,newN,newO;
+    ssize_t newM,newN,newO;
     if (A.o()>1) {
         if (addLength%(A.m()*A.n())!=0) {
             DTErrorMessage("IncreaseSize(Array,Length)","Length needs to be a multiple of m*n");
@@ -264,7 +264,7 @@ DTMutableCharArray IncreaseSize(const DTCharArray &A,ssize_t addLength)
     }
 
     DTMutableCharArray toReturn(newM,newN,newO);
-    std::memcpy(toReturn.Pointer(),A.Pointer(),A.Length()*sizeof(char));
+    std::memcpy(toReturn.Pointer(),A.Pointer(),(size_t)A.Length()*sizeof(char));
     return toReturn;
 }
 
@@ -285,8 +285,8 @@ void DTCharArray::PrintErrorMessage(ssize_t i,ssize_t j,ssize_t k) const
 
 DTMutableCharArray &DTMutableCharArray::operator=(char a)
 {
-    const size_t howManyNumbers = Length();
-    memset(Pointer(),a,howManyNumbers);
+    const ssize_t howManyNumbers = Length();
+    memset(Pointer(),a,(size_t)howManyNumbers);
     return *this;
 }
 
@@ -330,19 +330,19 @@ void CopyValues(DTMutableCharArray &into,const DTCharArray &from)
 		DTErrorMessage("CopyValues(MutableCharArray,CharArray)","Incompatible sizes");
 	}
 	else if (into.NotEmpty()) {
-		std::memcpy(into.Pointer(),from.Pointer(),into.Length());
+		std::memcpy(into.Pointer(),from.Pointer(),(size_t)into.Length());
 	}
 }
 
 DTMutableCharArray ExtractIndices(const DTCharArray &A,const DTRange &r)
 {
     if (r.end()>A.Length()) {
-        DTErrorMessage("ExtractEntries(DTCharArray,Range)","Range is out of bounds");
+        DTErrorMessage("ExtractIndices(DTCharArray,Range)","Range is out of bounds");
         return DTMutableCharArray();
     }
     
     DTMutableCharArray toReturn(r.length);
-    std::memcpy(toReturn.Pointer(), A.Pointer()+r.start, r.length);
+    std::memcpy(toReturn.Pointer(), A.Pointer()+r.start,(size_t)r.length);
     return toReturn;
 }
 

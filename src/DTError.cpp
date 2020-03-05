@@ -14,25 +14,21 @@ std::vector<std::string> &DTErrorList(void)
     return errorList;
 }
 
-size_t DTHowManyErrors()
+ssize_t DTHowManyErrors()
 {
-    return errorList.size();
+    return (ssize_t)errorList.size();
 }
 
 void DTErrorMessage(std::string fcn,std::string msg)
 {
-    // Set a breakpoint here, and then trace it back.
     std::string theErr = fcn + ": " + msg;
-    errorList.push_back(theErr);
-#ifndef DG_NOSTDErrOut
-    std::cerr << theErr << std::endl;
-    std::cerr.flush();
-#endif
+    DTErrorMessage(theErr);
 }
 
 void DTErrorMessage(std::string msg)
 {
     // Set a breakpoint here, and then trace it back.
+    if (msg.length()==0) return;
     errorList.push_back(msg);
 #ifndef DG_NOSTDErrOut
     std::cerr << msg << std::endl;
@@ -51,19 +47,19 @@ void DTWarningMessage(std::string fcn,std::string msg)
 #endif
 }
 
-void DTErrorOutOfRange(std::string type,ssize_t i,size_t m)
+void DTErrorOutOfRange(std::string type,ssize_t i,ssize_t m)
 {
     std::string toReturn = type + "(" + DTSize2String(i) + ") is not valid, needs to be lie in [0," + DTSize2String(m-1) + "].";
     DTErrorMessage(toReturn);
 }
 
-void DTErrorOutOfRange(std::string type,ssize_t i,ssize_t j,size_t m,size_t n)
+void DTErrorOutOfRange(std::string type,ssize_t i,ssize_t j,ssize_t m,ssize_t n)
 {
     std::string toReturn = type + "(" + DTSize2String(i) + "," + DTSize2String(j) + ") is not valid, needs to lie in [0,"  + DTSize2String(m-1) + "]x[0," + DTSize2String(n-1) + "].";
     DTErrorMessage(toReturn);
 }
 
-void DTErrorOutOfRange(std::string type,ssize_t i,ssize_t j,ssize_t k,size_t m,size_t n,size_t o)
+void DTErrorOutOfRange(std::string type,ssize_t i,ssize_t j,ssize_t k,ssize_t m,ssize_t n,ssize_t o)
 {
     std::string toReturn = type + "(" + DTSize2String(i) + "," + DTSize2String(j) + "," + DTSize2String(k) + ") is not valid, needs to lie in [0," + DTSize2String(m-1) + "]x[0," + DTSize2String(n-1) + "]x[0," + DTSize2String(o-1) + "].";
     DTErrorMessage(toReturn);

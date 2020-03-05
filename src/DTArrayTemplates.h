@@ -16,11 +16,11 @@ TM DTAddArrays(const char *name,const T &A,const T &B)
     }
 
     TM toReturn(A.m(),A.n(),A.o());
-    size_t len = A.Length();
+    ssize_t len = A.Length();
     const Td *AP = A.Pointer();
     const Td *BP = B.Pointer();
     Td *retP = toReturn.Pointer();
-    size_t i;
+    ssize_t i;
     for (i=0;i<len;i++)
         retP[i] = AP[i]+BP[i];
 
@@ -36,11 +36,11 @@ TM DTSubtractArrays(const char *name,const T &A,const T &B)
     }
     
     TM toReturn(A.m(),A.n(),A.o());
-    size_t len = A.Length();
+    ssize_t len = A.Length();
     const Td *AP = A.Pointer();
     const Td *BP = B.Pointer();
     Td *retP = toReturn.Pointer();
-    size_t i;
+    ssize_t i;
     for (i=0;i<len;i++)
         retP[i] = AP[i]-BP[i];
 
@@ -56,11 +56,11 @@ TM DTMultiplyArrays(const char *name,const T &A,const T &B)
     }
 
     TM toReturn(A.m(),A.n(),A.o());
-    size_t len = A.Length();
+    ssize_t len = A.Length();
     const Td *AP = A.Pointer();
     const Td *BP = B.Pointer();
     Td *retP = toReturn.Pointer();
-    size_t i;
+    ssize_t i;
     for (i=0;i<len;i++)
         retP[i] = AP[i]*BP[i];
 
@@ -76,11 +76,11 @@ TM DTDivideArrays(const char *name,const T &A,const T &B)
     }
 
     TM toReturn(A.m(),A.n(),A.o());
-    size_t len = A.Length();
+    ssize_t len = A.Length();
     const Td *AP = A.Pointer();
     const Td *BP = B.Pointer();
     Td *retP = toReturn.Pointer();
-    size_t i;
+    ssize_t i;
     for (i=0;i<len;i++)
         retP[i] = AP[i]/BP[i];
 
@@ -91,7 +91,7 @@ template <class T,class TM,class Td>
 TM DTArrayPlusNumber(const T &A,Td b)
 {
     TM toReturn(A.m(),A.n(),A.o());
-    size_t i,len = A.Length();
+    ssize_t i,len = A.Length();
     const Td *AP = A.Pointer();
     Td *retP = toReturn.Pointer();
     for (i=0;i<len;i++) retP[i] = AP[i]+b;
@@ -102,7 +102,7 @@ template <class T,class TM,class Td>
 TM DTArrayTimesNumber(const T &A,Td b)
 {
     TM toReturn(A.m(),A.n(),A.o());
-    size_t i,len = A.Length();
+    ssize_t i,len = A.Length();
     const Td *AP = A.Pointer();
     Td *retP = toReturn.Pointer();
     for (i=0;i<len;i++) retP[i] = AP[i]*b;
@@ -113,7 +113,7 @@ template <class T,class TM,class Td>
 TM DTArrayDivideByNumber(const T &A,Td b)
 {
     TM toReturn(A.m(),A.n(),A.o());
-    size_t i,len = A.Length();
+    ssize_t i,len = A.Length();
     const Td *AP = A.Pointer();
     Td *retP = toReturn.Pointer();
     for (i=0;i<len;i++) retP[i] = AP[i]/b;
@@ -124,7 +124,7 @@ template <class T,class TM,class Td>
 TM DTNumberMinusArray(Td a,const T &B)
 {
     TM toReturn(B.m(),B.n(),B.o());
-    size_t i,len = B.Length();
+    ssize_t i,len = B.Length();
     const Td *BP = B.Pointer();
     Td *retP = toReturn.Pointer();
     for (i=0;i<len;i++) retP[i] = a-BP[i];
@@ -135,7 +135,7 @@ template <class T,class TM,class Td>
 TM DTNumberDividedByArray(Td a,const T &B)
 {
     TM toReturn(B.m(),B.n(),B.o());
-    size_t i,len = B.Length();
+    ssize_t i,len = B.Length();
     const Td *BP = B.Pointer();
     Td *retP = toReturn.Pointer();
     for (i=0;i<len;i++) retP[i] = a/BP[i];
@@ -146,7 +146,7 @@ template <class T,class TM,class Td>
 TM DTNegateArray(const T &A)
 {
     TM toReturn(A.m(),A.n(),A.o());
-    size_t i,len = A.Length();
+    ssize_t i,len = A.Length();
     const Td *AP = A.Pointer();
     Td *retP = toReturn.Pointer();
     for (i=0;i<len;i++) retP[i] = -AP[i];
@@ -160,7 +160,7 @@ void DTPlusEqualsArray(TM &A,const T &B)
         DTErrorMessage("A+=B","Incompatible sizes.");
         return;
     }
-    size_t i,len = A.Length();
+    ssize_t i,len = A.Length();
     Td *AP = A.Pointer();
     const Td *BP = B.Pointer();
     for (i=0;i<len;i++) AP[i] += BP[i];
@@ -173,7 +173,7 @@ void DTMinusEqualsArray(TM &A,const T &B)
         DTErrorMessage("A-=B","Incompatible sizes.");
         return;
     }
-    size_t i,len = A.Length();
+    ssize_t i,len = A.Length();
     Td *AP = A.Pointer();
     const Td *BP = B.Pointer();
     for (i=0;i<len;i++) AP[i] -= BP[i];
@@ -186,7 +186,7 @@ void DTTimesEqualsArray(TM &A,const T &B)
         DTErrorMessage("A*=B","Incompatible sizes.");
         return;
     }
-    size_t i,len = A.Length();
+    ssize_t i,len = A.Length();
     Td *AP = A.Pointer();
     const Td *BP = B.Pointer();
     for (i=0;i<len;i++) AP[i] *= BP[i];
@@ -199,7 +199,7 @@ void DTDivideEqualsArray(TM &A,const T &B)
         DTErrorMessage("A/=B","Incompatible sizes.");
         return;
     }
-    size_t i,len = A.Length();
+    ssize_t i,len = A.Length();
     Td *AP = A.Pointer();
     const Td *BP = B.Pointer();
     for (i=0;i<len;i++) AP[i] /= BP[i];
@@ -208,7 +208,7 @@ void DTDivideEqualsArray(TM &A,const T &B)
 template <class TM,class Td>
 void DTPlusEqualsScalar(TM &A,Td b)
 {
-    size_t i,len = A.Length();
+    ssize_t i,len = A.Length();
     Td *AP = A.Pointer();
     for (i=0;i<len;i++) AP[i] += b;
 }
@@ -216,7 +216,7 @@ void DTPlusEqualsScalar(TM &A,Td b)
 template <class TM,class Td>
 void DTMinusEqualsScalar(TM &A,Td b)
 {
-    size_t i,len = A.Length();
+    ssize_t i,len = A.Length();
     Td *AP = A.Pointer();
     for (i=0;i<len;i++) AP[i] -= b;
 }
@@ -224,7 +224,7 @@ void DTMinusEqualsScalar(TM &A,Td b)
 template <class TM,class Td>
 void DTTimesEqualsScalar(TM &A,Td b)
 {
-    size_t i,len = A.Length();
+    ssize_t i,len = A.Length();
     Td *AP = A.Pointer();
     for (i=0;i<len;i++) AP[i] *= b;
 }
@@ -232,13 +232,13 @@ void DTTimesEqualsScalar(TM &A,Td b)
 template <class TM,class Td>
 void DTDivideEqualsScalar(TM &A,Td b)
 {
-    size_t i,len = A.Length();
+    ssize_t i,len = A.Length();
     Td *AP = A.Pointer();
     for (i=0;i<len;i++) AP[i] /= b;
 }
 
 template <class T,class TM,class Td>
-TM DTTruncateArraySize(const T &A,size_t length)
+TM DTTruncateArraySize(const T &A,ssize_t length)
 {
     // New length needs to fit as a MxNxO array
     // where MNO = length and
@@ -252,7 +252,7 @@ TM DTTruncateArraySize(const T &A,size_t length)
         return TM();
     }
 
-    size_t newM,newN,newO;
+    ssize_t newM,newN,newO;
     if (A.o()>1) {
         if (length%(A.m()*A.n())!=0) {
             DTErrorMessage("TruncateSize(Array,Length)","Invalid new dimension");
@@ -278,7 +278,7 @@ TM DTTruncateArraySize(const T &A,size_t length)
     }
 
     TM toReturn(newM,newN,newO);
-    std::memcpy(toReturn.Pointer(),A.Pointer(),length*sizeof(Td));
+    std::memcpy(toReturn.Pointer(),A.Pointer(),(size_t)length*sizeof(Td));
     return toReturn;
 }
 
@@ -290,7 +290,7 @@ TM DTIncreaseArraySize(const T &A,ssize_t addLength)
         return TM();
     }
 
-    size_t newM,newN,newO;
+    ssize_t newM,newN,newO;
     if (A.o()>1) {
         if (addLength%(A.m()*A.n())!=0) {
             DTErrorMessage("IncreaseSize(Array,Length)","Length needs to be a multiple of m*n");
@@ -316,7 +316,7 @@ TM DTIncreaseArraySize(const T &A,ssize_t addLength)
     }
 
     TM toReturn(newM,newN,newO);
-    std::memcpy(toReturn.Pointer(),A.Pointer(),A.Length()*sizeof(Td));
+    std::memcpy(toReturn.Pointer(),A.Pointer(),(size_t)A.Length()*sizeof(Td));
     return toReturn;
 }
 
@@ -328,11 +328,11 @@ bool DTOperatorArrayEqualsArray(const T &A,const T &B)
     if (A.Pointer()==B.Pointer())
         return true;
     
-    size_t len = A.Length();
+    ssize_t len = A.Length();
     const td *AP = A.Pointer();
     const td *BP = B.Pointer();
     
-    return (memcmp(AP,BP,len*sizeof(td))==0);
+    return (memcmp(AP,BP,(size_t)len*sizeof(td))==0);
 }
 
 template <class T,class TM,class Td>
@@ -340,10 +340,10 @@ TM DTTransposeArray(const T &A)
 {
     if (A.IsEmpty()) return TM();
 
-    const size_t m = A.m();
-    const size_t n = A.n();
-    const size_t o = A.o();
-    size_t i,j,k;
+    const ssize_t m = A.m();
+    const ssize_t n = A.n();
+    const ssize_t o = A.o();
+    ssize_t i,j,k;
 
     TM toReturn;
     Td *toReturnD;
@@ -352,8 +352,8 @@ TM DTTransposeArray(const T &A)
     if (A.o()!=1) {
         toReturn = TM(o,n,m);
         toReturnD = toReturn.Pointer();
-        size_t ijkNew,ijkOld;
-        size_t no = n*o;
+        ssize_t ijkNew,ijkOld;
+        ssize_t no = n*o;
         for (k=0;k<o;k++) {
             for (j=0;j<n;j++) {
                 ijkNew = k + j*o;
@@ -369,9 +369,9 @@ TM DTTransposeArray(const T &A)
     else {
         toReturn = TM(n,m);
         toReturnD = toReturn.Pointer();
-        size_t ijNew, ijOld;
+        ssize_t ijNew, ijOld;
         if (m==1 || n==1) {
-            std::memcpy(toReturn.Pointer(),A.Pointer(),m*n*sizeof(Td));
+            std::memcpy(toReturn.Pointer(),A.Pointer(),(size_t)(m*n)*sizeof(Td));
         }
         else {
             for (j=0;j<n;j++) {
@@ -394,18 +394,18 @@ TM DTArrayFlipJ(const T &A)
 {
     TM toReturn(A.m(),A.n(),A.o());
     
-    size_t m = A.m();
-    size_t n = A.n();
-    size_t o = A.o();
-    size_t mn = m*n;
+    ssize_t m = A.m();
+    ssize_t n = A.n();
+    ssize_t o = A.o();
+    ssize_t mn = m*n;
     
     const Td *fromP = A.Pointer();
     Td *toP = toReturn.Pointer();
     
-    size_t j,k;
+    ssize_t j,k;
     for (k=0;k<o;k++) {
         for (j=0;j<n;j++) {
-            std::memcpy(toP+j*m+k*mn,fromP+(n-1-j)*m+k*mn,m*sizeof(Td));
+            std::memcpy(toP+j*m+k*mn,fromP+(n-1-j)*m+k*mn,(size_t)m*sizeof(Td));
         }
     }
     

@@ -72,7 +72,9 @@ public:
     DTDataFile(const DTDataFile &);
     DTDataFile &operator=(const DTDataFile &);
 
+    bool IsOpen(void) const;
     bool Contains(const std::string &name) const;
+    bool SizeOf(const std::string &name,int &m,int &n,int &o) const;
     DTList<std::string> AllVariableNames(void) const;
     bool IsReadOnly(void) const;
     void SaveIndex(void);
@@ -95,6 +97,7 @@ public:
     bool SavedAsCharacter(const std::string &name) const;
     bool SavedAsShort(const std::string &name) const;
     bool SavedAsInt(const std::string &name) const;
+    bool SavedAsFloat(const std::string &name) const;
     bool SavedAsDouble(const std::string &name) const;
     bool SavedAsString(const std::string &name) const;
 

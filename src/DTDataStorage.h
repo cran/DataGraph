@@ -47,6 +47,7 @@ public:
     virtual bool SavedAsCharacter(const std::string &name) const = 0; // Signed or unsigned
     virtual bool SavedAsShort(const std::string &name) const = 0; // Signed or unsigned
     virtual bool SavedAsInt(const std::string &name) const = 0;
+    virtual bool SavedAsFloat(const std::string &name) const = 0;
     virtual bool SavedAsDouble(const std::string &name) const = 0;
     virtual bool SavedAsString(const std::string &name) const = 0;
 

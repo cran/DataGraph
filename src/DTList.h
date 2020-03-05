@@ -30,7 +30,7 @@ public:
     DTList() : Data(0), length(0), refCount(new int(1)), outOfRange() {}
     DTList(const DTList<T> &A) : Data(A.Data), length(A.length), refCount(A.refCount), outOfRange() {++(*refCount);}
 protected:
-    DTList(ssize_t len) : Data(len<=0 ? 0 : new T[len]), length(len<=0 ? 0 : len), refCount(new int(1)), outOfRange() {}
+    DTList(ssize_t len) : Data(len<=0 ? 0 : new T[(size_t)len]), length(len<=0 ? 0 : len), refCount(new int(1)), outOfRange() {}
 public:
     
     virtual ~DTList() {
@@ -59,7 +59,7 @@ public:
     ssize_t Length(void) const {return length;}
 
 #if DTRangeCheck
-    const T operator()(ssize_t i) const  {if (i>= length) {DTErrorOutOfRange("DTList<T>",i,length); return outOfRange;} return Data[i];}
+    const T operator()(ssize_t i) const  {if (i<0 || i>=length) {DTErrorOutOfRange("DTList<T>",i,length); return outOfRange;} return Data[i];}
 #else
     const T operator()(ssize_t i) const  {return Data[i];}
 #endif
@@ -77,7 +77,7 @@ template <class T>
 class DTMutableList : public DTList<T> {
 public:
     DTMutableList() : DTList<T>() {}
-    DTMutableList(size_t len) : DTList<T>(len) {}
+    DTMutableList(ssize_t len) : DTList<T>(len) {}
     DTMutableList(const DTMutableList<T> &A) : DTList<T>(A) {}
 
     DTMutableList<T> &operator=(const DTMutableList<T> &A) {DTList<T>::operator=(A); return *this;}
@@ -86,7 +86,7 @@ public:
     const T *Pointer(void) const {return DTList<T>::Data;}
 
 #if DTRangeCheck
-    T &operator()(ssize_t i) {if (i>=DTList<T>::length) {DTErrorOutOfRange("DTList<T>",i,DTList<T>::length); return DTList<T>::outOfRange;} return DTList<T>::Data[i];}
+    T &operator()(ssize_t i) {if (i<0 || i>=DTList<T>::length) {DTErrorOutOfRange("DTList<T>",i,DTList<T>::length); return DTList<T>::outOfRange;} return DTList<T>::Data[i];}
     T operator()(ssize_t i) const  {if (i<0 || i>= DTList<T>::length) {DTErrorOutOfRange("DTList<T>",i,DTList<T>::length); return DTList<T>::outOfRange;} return DTList<T>::Data[i];}
 #else
     T &operator()(ssize_t i) {return DTList<T>::Data[i];}

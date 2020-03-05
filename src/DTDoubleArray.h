@@ -110,7 +110,8 @@ public:
     ssize_t Length() const;
     bool IsEmpty() const;
     bool NotEmpty() const;
-    
+    ssize_t MemoryUsed(void) const {return Length()*sizeof(double);}
+
     // Low level access
     int ReferenceCount() const;
     int MutableReferences() const; // How many mutable arrays have access to the pointer.
@@ -146,6 +147,7 @@ public:
     void pi(int i) const; // (i,:)
     void pj(int j) const; // (:,j)
     void pall(void) const;  // Uses the same layout as DataTank in the variable monitor.
+    void pslice(int k) const;
     void prange(int s,int e) const; // Offsets [s,e], both included.
     void pcrange(int s,int e) const; // Print (:,[s:e]), otherwise like pall().
  	void psigns(void) const; // -,0,+
@@ -261,8 +263,11 @@ extern void MemoryCopyColumns(DTMutableDoubleArray &into,ssize_t intoLocation,co
 extern void MemoryMove(DTMutableDoubleArray &into,ssize_t intoLocation,const DTRange &range);
 extern void MemoryMoveColumns(DTMutableDoubleArray &into,ssize_t intoLocation,const DTRange &range);
 
+extern DTMutableDoubleArray Region(const DTDoubleArray &,const DTRange &iRange,const DTRange &jRange,const DTRange &kRange);
+extern DTMutableDoubleArray Region(const DTDoubleArray &,const DTRange &iRange,const DTRange &jRange);
 extern DTMutableDoubleArray SubArray(const DTDoubleArray &,ssize_t imin,ssize_t icount,ssize_t jmin,ssize_t jcount,ssize_t kmin,ssize_t kcount);
 extern DTMutableDoubleArray ExtractColumns(const DTDoubleArray &,const DTIntArray &indices);
+extern DTMutableDoubleArray ExtractRows(const DTDoubleArray &,const DTRange &r);
 extern DTMutableDoubleArray ExtractColumns(const DTDoubleArray &,const DTRange &);
 extern DTMutableDoubleArray ExtractIndices(const DTDoubleArray &,const DTIntArray &indices);
 extern DTMutableDoubleArray ExtractIndices(const DTDoubleArray &,const DTRange &); // A single list, range in offsets
@@ -279,6 +284,10 @@ extern DTMutableDoubleArray Minimum(const DTDoubleArray &,double);
 extern DTMutableDoubleArray Maximum(const DTDoubleArray &,const DTDoubleArray &);
 extern DTMutableDoubleArray Maximum(const DTDoubleArray &,double);
 extern bool ContainsNonFinite(const DTDoubleArray &);
+extern ssize_t FindIndexOfMaximum(const DTDoubleArray &A);
+extern double Mean(const DTDoubleArray &A);
+
+
 
 extern DTMutableDoubleArray CombineColumns(const DTDoubleArray &First,const DTDoubleArray &Second);
 

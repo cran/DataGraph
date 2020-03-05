@@ -56,6 +56,7 @@ public:
     ssize_t Length() const {return Storage->length;}
     bool IsEmpty() const {return (Storage->length==0);}
     bool NotEmpty() const {return (Storage->length!=0);}
+    ssize_t MemoryUsed(void) const {return Length()*sizeof(int);}
 
     // Low level access
     int ReferenceCount() const {Storage->accessLock.Lock(); int refCnt = Storage->referenceCount; Storage->accessLock.Unlock(); return refCnt;}
@@ -154,6 +155,9 @@ public:
     DTIntArrayRegion operator()(DTIndex);
     DTIntArrayRegion operator()(DTIndex,DTIndex);
     DTIntArrayRegion operator()(DTIndex,DTIndex,DTIndex);
+    
+    void operator-=(int v);
+    void operator+=(int v);
 };
 
 bool operator==(const DTIntArray &A,const DTIntArray &B);
@@ -185,6 +189,7 @@ extern DTMutableIntArray ExtractIndices(const DTIntArray &,const DTRange &); // 
 
 extern int Minimum(const DTIntArray &);
 extern int Maximum(const DTIntArray &);
+extern void Range(const DTIntArray &,int &minV,int &maxV);
 
 extern ssize_t FindEntry(const DTIntArray &,int); // Linear search for first entry (offset) -1 if not found
 extern ssize_t FindEntryInSorted(const DTIntArray &,int); // Same as above, just expects list to be increasing.
