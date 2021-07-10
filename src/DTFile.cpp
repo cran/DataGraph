@@ -19,6 +19,7 @@
 #include "DTUShortIntArray.h"
 #include "DTUtilities.h"
 #include <limits>
+#include <cstdint>
 
 struct DTFileStorage
 {
@@ -133,18 +134,16 @@ DTFile::DTFile(const DTFile &C)
 
 bool DTFile::RunningOnBigEndianMachine(void)
 {
-    int fourBytes[1];
-    fourBytes[0] = 128912422;
-    short int *asTwoShorts = (short int *)fourBytes;
-    return (asTwoShorts[0]==1967);
+    int32_t fourBytes = 128912422;
+    int16_t asTwoShorts = *((int16_t *)(&fourBytes));
+    return (asTwoShorts==1967);
 }
 
 DTFile::Endian DTFile::EndianForMachine(void)
 {
-    int fourBytes[1];
-    fourBytes[0] = 128912422;
-    short int *asTwoShorts = (short int *)fourBytes;
-    return (asTwoShorts[0]==1967 ? DTFile::BigEndian : DTFile::LittleEndian);
+    int32_t fourBytes = 128912422;
+    int16_t asTwoShorts = *((int16_t *)(&fourBytes));
+    return (asTwoShorts==1967 ? DTFile::BigEndian : DTFile::LittleEndian);
 }
 
 DTFile &DTFile::operator=(const DTFile &C)

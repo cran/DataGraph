@@ -1,4 +1,4 @@
-c684d77f09ee03258d8c094d80ab3722 *DESCRIPTION
+07da6217334255661e200910a51abb48 *DESCRIPTION
 64883647c010b67eef6e9da2e88a0d1d *NAMESPACE
 b2e4227b31c88f7e114a5116d4af628b *R/RcppExports.R
 3ade73a2d1f62df13c987998c760c7cb *man/DataGraph-package.Rd
@@ -31,7 +31,7 @@ f18f4df8459980d80bb0f499277e9e54 *src/DTDoubleArrayOperators.cpp
 f801d16910cc99d6149952e7b3a53aad *src/DTEndianSwap.h
 49561a9ea3d2c4cf9395b01848fe6989 *src/DTError.cpp
 4a1c92c3727c1301d370e248005ed0ea *src/DTError.h
-a7997d433df0e36c5686b2f922796582 *src/DTFile.cpp
+8b51e7c5f3d404431b8edb8c76d9a388 *src/DTFile.cpp
 f79e00c015a41d52419b9be0e3d43223 *src/DTFile.h
 e1f12566bdd3a348b682dc7fc90088b8 *src/DTFloatArray.cpp
 1c19d896919328fc674bd71ca9b9a12f *src/DTFloatArray.h
@@ -49,7 +49,7 @@ c033b5ae613ba61f96199f6cd532993e *src/DTPoint3D.h
 45859ec03cdb5d257f92a97ce13267e6 *src/DTPointer.h
 072a271ee6b2eaf49764f9cacd3502cb *src/DTRegion1D.cpp
 a1be8c60ade97b69f2ffca81b8ddf2c6 *src/DTRegion1D.h
-317ef658f85dd9f0469e6dde67e78553 *src/DTRegion3D.cpp
+b2fa0a37e4dc92826713ad8710ced5f9 *src/DTRegion3D.cpp
 afa4167e44ebb165da59c794142ccfa4 *src/DTRegion3D.h
 9acbc7375bac35647377ef63d7396d23 *src/DTShortIntArray.cpp
 4fb93427588c0e86f18e3b64f556f752 *src/DTShortIntArray.h

@@ -91,7 +91,7 @@ DTRegion3D BoundingBox3D(const DTDoubleArray &points)
     xmax = ymax = zmax = -INFINITY;
     
     double x,y,z;
-    size_t i;
+    ssize_t i;
     
     const double *pointD = points.Pointer();
     
