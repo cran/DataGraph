@@ -1,4 +1,4 @@
-07da6217334255661e200910a51abb48 *DESCRIPTION
+d3b8b148208e2ed65a0b73a4743f76af *DESCRIPTION
 64883647c010b67eef6e9da2e88a0d1d *NAMESPACE
 b2e4227b31c88f7e114a5116d4af628b *R/RcppExports.R
 3ade73a2d1f62df13c987998c760c7cb *man/DataGraph-package.Rd
@@ -31,7 +31,7 @@ f18f4df8459980d80bb0f499277e9e54 *src/DTDoubleArrayOperators.cpp
 f801d16910cc99d6149952e7b3a53aad *src/DTEndianSwap.h
 49561a9ea3d2c4cf9395b01848fe6989 *src/DTError.cpp
 4a1c92c3727c1301d370e248005ed0ea *src/DTError.h
-8b51e7c5f3d404431b8edb8c76d9a388 *src/DTFile.cpp
+292f786fa538e06730de7ad2a0f1462d *src/DTFile.cpp
 f79e00c015a41d52419b9be0e3d43223 *src/DTFile.h
 e1f12566bdd3a348b682dc7fc90088b8 *src/DTFloatArray.cpp
 1c19d896919328fc674bd71ca9b9a12f *src/DTFloatArray.h

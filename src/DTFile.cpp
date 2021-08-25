@@ -132,18 +132,34 @@ DTFile::DTFile(const DTFile &C)
     storage->retainCount++;
 }
 
+/*
+ This doesn't work on a windows box (some versions)
+#ifdef _WIN32
+#include <winsock.h>
+#else
+#include <arpa/inet.h>
+#endif
+ */
+
 bool DTFile::RunningOnBigEndianMachine(void)
 {
-    int32_t fourBytes = 128912422;
-    int16_t asTwoShorts = *((int16_t *)(&fourBytes));
-    return (asTwoShorts==1967);
+    // return (htons(1)==1);
+
+    union {
+        uint32_t i;
+        char c[4];
+    } bint = {0x01020304};
+    return (bint.c[0]==1);
+
+    // This was considered uninitialized memory.
+    //int32_t fourBytes = 128912422;
+    //int16_t asTwoShorts = *((int16_t *)(&fourBytes));
+    //return (asTwoShorts==1967);
 }
 
 DTFile::Endian DTFile::EndianForMachine(void)
 {
-    int32_t fourBytes = 128912422;
-    int16_t asTwoShorts = *((int16_t *)(&fourBytes));
-    return (asTwoShorts==1967 ? DTFile::BigEndian : DTFile::LittleEndian);
+    return (DTFile::RunningOnBigEndianMachine() ? DTFile::BigEndian : DTFile::LittleEndian);
 }
 
 DTFile &DTFile::operator=(const DTFile &C)
