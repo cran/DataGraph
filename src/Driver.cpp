@@ -64,6 +64,8 @@ DTCharArray UTF8BufferFrom(SEXP x)
     DTMutableCharArray utf8Buffer(lengthOfBuffer);
     int posInBuffer = 0;
     
+    PROTECT(x);
+    
     int n = Rf_length(x);
     for (int i = 0; i < n; ++i) {
         SEXP xi = STRING_ELT(x, i);
@@ -86,6 +88,8 @@ DTCharArray UTF8BufferFrom(SEXP x)
         }
     }
     utf8Buffer = TruncateSize(utf8Buffer,posInBuffer);
+    
+    UNPROTECT(1);
     
     return utf8Buffer;
 }
@@ -337,10 +341,12 @@ bool ConvertToTableIfPossible(const std::string &name,SEXP x,DTTable &returnTabl
         
         // Rcout << name << " has string names" << endl;
         // See if I have a names column specified
+        PROTECT(nameList);
         DTMutableList<DTTableColumn> twoColumns(2);
         twoColumns(0) = ConvertSingleColumn("name",nameList);
         twoColumns(1) = ConvertSingleColumn("value",x);
         returnTable = DTTable(twoColumns);
+        UNPROTECT(1);
         return true;
     }
     
@@ -468,9 +474,12 @@ DTTable ConvertToTable(DataFrame df)
 {
     DTTableColumn rowNameColumn;
     SEXP rowNames = Rf_getAttrib(df, Rf_install("row.names"));
+    PROTECT(rowNames);
     if (TYPEOF(rowNames)==STRSXP) {
         rowNameColumn = ConvertToColumn("row.names",rowNames);
     }
+    UNPROTECT(1);
+
     // Rcout << "type = " << Rf_type2char(TYPEOF(rown)) << endl;
 
     CharacterVector names = df.names();
@@ -512,9 +521,10 @@ DTTable ConvertFromMatrix(const std::string &name,SEXP x)
     int rowsInMatrix = 0;
     int columnsInMatrix = 0;
     
-    SEXP dims = Rf_getAttrib(x, Rf_install("dim"));
+    SEXP dims = PROTECT(Rf_getAttrib(x, Rf_install("dim")));
     DTMutableIntArray ia;
     ConvertToIntArray(dims,ia,mask);
+    UNPROTECT(1);
     if (ia.Length()!=2) {
         // I don't think this will happen, but just in case
         Rcout << "Only support a two dimensional matrices (" << name <<")" << endl;
@@ -525,13 +535,15 @@ DTTable ConvertFromMatrix(const std::string &name,SEXP x)
     
     // SEXP dimnames = Rf_getAttrib(x,Rf_install("dimnames"));
     // Require the rows and column names to be specified
-    SEXP dimN = Rf_getAttrib(x,Rf_install("dimnames"));
+    SEXP dimN = PROTECT(Rf_getAttrib(x,Rf_install("dimnames")));
     if (TYPEOF(dimN)!=VECSXP) {
         // Don't want to save a matrix that doesn't have any labels.
+        UNPROTECT(1);
         Rcout << "Can only save matrices that have dimension names defined.  The entry " << name << " will be saved as an empty table (" << TYPEOF(dimN) << ")" << endl;
         return DTTable();
     }
     List dimNames(dimN);
+    UNPROTECT(1);
     
     SEXP rowLabels = dimNames[0];
     DTCharArray utf8Buffer = UTF8BufferFrom(rowLabels);

@@ -55,7 +55,7 @@ DTRegion3D BoundingBox3D(const DTFloatArray &points)
         x = pointD[i];
         y = pointD[i+1];
         z = pointD[i+2];
-        if (isfinite(x) & isfinite(y) & isfinite(z)) {
+        if (isfinite(x)==0 || isfinite(y)==0 || isfinite(z)==0) {
             // Non-finite points are not included in the bounding box.
             xmin = (x < xmin ? x : xmin);
             xmax = (xmax < x ? x : xmax);
@@ -99,7 +99,7 @@ DTRegion3D BoundingBox3D(const DTDoubleArray &points)
         x = pointD[i];
         y = pointD[i+1];
         z = pointD[i+2];
-        if (isfinite(x) & isfinite(y) & isfinite(z)) {
+        if (isfinite(x)==0 || isfinite(y)==0 || isfinite(z)==0) {
             // Non-finite points are not included in the bounding box.
             xmin = (x < xmin ? x : xmin);
             xmax = (xmax < x ? x : xmax);
