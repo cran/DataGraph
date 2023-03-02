@@ -3,11 +3,10 @@
 \alias{DataGraph}
 \docType{package}
 \title{
-  Export Data from R so DataGraph can Read it
+  Export Data from R to DataGraph
 }
 \description{
-Functions to save either .dtable or .dtbin files that can be read by DataGraph,
-a graphing and analysis application for MacOS.  Can save a data frame,
+Transfers data from 'R' to 'DataGraph'. Save either .dtable or .dtbin files that can be read by 'DataGraph', a graphing and analysis application for MacOS. Can save a data frame,
 collection of data frames and sequences of data frames and individual vectors.
 }
 \details{
@@ -37,7 +36,7 @@ Maintainer: David Adalsteinsson <david@visualdatatools.com>
   \dontrun{
      writeDTable("/tmp/test",mtcars)
 
-     openDTable("/tmp/test2" name)
+     openDTable("/tmp/test2")
      addDTable("/tmp/test2",data frame)
      ...  modify the table
      addDTable("/tmp/test2",data frame)

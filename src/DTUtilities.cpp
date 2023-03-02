@@ -7,22 +7,22 @@
 
 string DTInt2String(int n)
 {
-    char temp[20];
-    sprintf(temp,"%d",n);
+    char temp[30];
+    snprintf(temp,30,"%d",n);
     return string(temp);
 }
 
 string DTSize2String(ssize_t n)
 {
     char temp[30];
-    sprintf(temp,"%ld",(long int)n);
+    snprintf(temp,30,"%ld",(long int)n);
     return string(temp);
 }
 
 string DTFloat2StringShort(double v)
 {
     char temp[20];
-    sprintf(temp,"%g",v);
+    snprintf(temp,20,"%g",v);
     return string(temp);
 }
 

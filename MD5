@@ -1,14 +1,14 @@
-d67e013645702b5a9f0d75b9f90062e1 *DESCRIPTION
+2ede06790c137f51e1c3558d9bf746b9 *DESCRIPTION
 64883647c010b67eef6e9da2e88a0d1d *NAMESPACE
 b2e4227b31c88f7e114a5116d4af628b *R/RcppExports.R
-3ade73a2d1f62df13c987998c760c7cb *man/DataGraph-package.Rd
+eabb27a5f08acfca780cee6e9b8a96f5 *man/DataGraph-package.Rd
 40f9f4159aac1ae182b02cb4926f7db4 *man/addDTBin.Rd
 473934f41acd41451a14861b20153c65 *man/addDTable.Rd
 de5bd040c712eda2e2627f62d7f667b9 *man/closeDTBin.Rd
 acdf8398643fe72180f4ee349fe90943 *man/closeDTable.Rd
 c3c2003d96e8a7c83b24b5d8916b4ee2 *man/infoDTBin.Rd
 2d79b917ef5fad500ba65c5fea37b811 *man/openDTBin.Rd
-7fa81c0c99021702e259c8593eee4222 *man/openDTable.Rd
+2622db236fc8b6e0e1071ba9f3614b02 *man/openDTable.Rd
 124aa6d2cc9cb74f2094735ff5e3a8b1 *man/syncDTBin.Rd
 0dd2ad30b42689550b95972bc28615c9 *man/syncDTable.Rd
 10d1aea5f702ff71d2c3ea0909c45454 *man/writeDTable.Rd
@@ -65,7 +65,7 @@ d1e3feec0a62cf7564a0c950e4948135 *src/DTUCharArray.cpp
 d4ad6ba04907b65d39f6f7770fde87c1 *src/DTUCharArray.h
 a2b2068c572605b91e8843cfd597b962 *src/DTUShortIntArray.cpp
 214c5332e7f3c677c16fabe6668efd89 *src/DTUShortIntArray.h
-c3f78daa6bfc0fd492d5924341de0e3b *src/DTUtilities.cpp
+3839bab4c6288a284c5de1d58cb3147f *src/DTUtilities.cpp
 2437ca41f7f094fc0933c1873943cec8 *src/DTUtilities.h
 efffff18712d1aa05162e2598ba85f88 *src/DTVector3D.h
 34e407875f3f6822b7ab5aa93717a5f2 *src/Driver.cpp

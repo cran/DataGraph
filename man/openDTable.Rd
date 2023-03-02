@@ -15,8 +15,8 @@ Saves the data frame to a file
 }
 \examples{
 \dontrun{
-openDTBin("/tmp/test")
-addDTBin("/tmp/test","A",Orange)
-closeDTBin("/tmp/test")
+openDTable("/tmp/test")
+addDTable("/tmp/test",Orange)
+closeDTable("/tmp/test")
 }
 }
